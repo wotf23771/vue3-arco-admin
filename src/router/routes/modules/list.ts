@@ -20,7 +20,6 @@ const LIST: AppRouteRecordRaw = {
         locale: "menu.list.searchTable",
         requiresAuth: true,
         roles: ["*"],
-        ignoreCache: true,
       },
     },
     {

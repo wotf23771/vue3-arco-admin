@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import { RouteRecordRaw, RouteRecordNormalized } from "vue-router";
+import { RouteRecordNormalized, RouteRecordRaw } from "vue-router";
 import usePermission from "@/hooks/permission";
 import { useAppStore } from "@/store";
 import appClientMenus from "@/router/app-menus";
@@ -14,7 +14,8 @@ export default function useMenuTree() {
     }
     return appClientMenus;
   });
-  const menuTree = computed(() => {
+  console.log("t", appRoute.value);
+  let menuTree = computed(() => {
     const copyRouter = cloneDeep(appRoute.value) as RouteRecordNormalized[];
     copyRouter.sort((a: RouteRecordNormalized, b: RouteRecordNormalized) => {
       return (a.meta.order || 0) - (b.meta.order || 0);
@@ -63,6 +64,41 @@ export default function useMenuTree() {
     }
 
     return travel(copyRouter, 0);
+  });
+
+  menuTree = computed(() => {
+    return [
+      {
+        path: "/dashboard/workplace",
+        name: "dashboard",
+        meta: {
+          locale: "首页",
+          requiresAuth: true,
+          icon: "icon-dashboard",
+          order: 0,
+        },
+      },
+      {
+        path: "/list/search-table",
+        name: "m1",
+        meta: {
+          locale: "列表1",
+          requiresAuth: true,
+          icon: "icon-dashboard",
+          order: 1,
+        },
+      },
+      {
+        path: "/list/card",
+        name: "m2",
+        meta: {
+          locale: "列表2",
+          requiresAuth: true,
+          icon: "icon-dashboard",
+          order: 3,
+        },
+      },
+    ];
   });
 
   return {
