@@ -15,7 +15,7 @@ import CertificationRecords from "./certification-records.vue";
 const { loading, setLoading } = useLoading(true);
 const data = ref<UnitCertification>({
   enterpriseInfo: {} as EnterpriseCertificationModel,
-  record: []
+  record: [],
 });
 const fetchData = async () => {
   try {

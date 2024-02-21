@@ -20,36 +20,9 @@
       </a-space>
     </div>
     <div class="center-side">
-      <Menu v-if="topMenu"/>
+      <Menu v-if="topMenu" />
     </div>
     <ul class="right-side">
-      <!--      <li>-->
-      <!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
-      <!--          <div class="message-box-trigger">-->
-      <!--            <a-badge :count="9" dot>-->
-      <!--              <a-button-->
-      <!--                  class="nav-btn"-->
-      <!--                  type="outline"-->
-      <!--                  :shape="'circle'"-->
-      <!--                  @click="setPopoverVisible"-->
-      <!--              >-->
-      <!--                <icon-notification/>-->
-      <!--              </a-button>-->
-      <!--            </a-badge>-->
-      <!--          </div>-->
-      <!--        </a-tooltip>-->
-      <!--        <a-popover-->
-      <!--            trigger="click"-->
-      <!--            :arrow-style="{ display: 'none' }"-->
-      <!--            :content-style="{ padding: 0, minWidth: '400px' }"-->
-      <!--            content-class="message-popover"-->
-      <!--        >-->
-      <!--          <div ref="refBtn" class="ref-btn"></div>-->
-      <!--          <template #content>-->
-      <!--            <message-box/>-->
-      <!--          </template>-->
-      <!--        </a-popover>-->
-      <!--      </li>-->
       <li>
         <a-tooltip
             :content="
@@ -65,26 +38,12 @@
               @click="toggleFullScreen"
           >
             <template #icon>
-              <icon-fullscreen-exit v-if="isFullscreen"/>
-              <icon-fullscreen v-else/>
+              <icon-fullscreen-exit v-if="isFullscreen" />
+              <icon-fullscreen v-else />
             </template>
           </a-button>
         </a-tooltip>
       </li>
-      <!--      <li>-->
-      <!--        <a-tooltip :content="$t('settings.title')">-->
-      <!--          <a-button-->
-      <!--              class="nav-btn"-->
-      <!--              type="outline"-->
-      <!--              :shape="'circle'"-->
-      <!--              @click="setVisible"-->
-      <!--          >-->
-      <!--            <template #icon>-->
-      <!--              <icon-settings/>-->
-      <!--            </template>-->
-      <!--          </a-button>-->
-      <!--        </a-tooltip>-->
-      <!--      </li>-->
       <li>
         <a-dropdown trigger="hover">
           <div style="cursor: pointer;">
@@ -92,28 +51,28 @@
                 :size="32"
                 :style="{ marginRight: '8px', backgroundColor: '#3370ff' }"
             >
-              <icon-user/>
+              <icon-user />
             </a-avatar>
             <span style="user-select: none;">管理员</span>
           </div>
           <template #content>
             <a-doption>
               <a-space @click="$router.push({ name: 'Info' })">
-                <icon-user/>
+                <icon-user />
                 <span>个人中心</span>
               </a-space>
             </a-doption>
             <a-doption>
               <a-space @click="$router.push({ name: 'Setting' })">
-                <icon-settings/>
+                <icon-settings />
                 <span>
-                  {{ $t('messageBox.userSettings') }}
+                  {{ $t("messageBox.userSettings") }}
                 </span>
               </a-space>
             </a-doption>
             <a-doption>
               <a-space @click="handleLogout">
-                <icon-export/>
+                <icon-export />
                 <span>退出系统</span>
               </a-space>
             </a-doption>
@@ -125,13 +84,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from 'vue';
-import { Message } from '@arco-design/web-vue';
-import { useDark, useFullscreen } from '@vueuse/core';
-import { useAppStore, useUserStore } from '@/store';
-import useUser from '@/hooks/user';
-import Menu from '@/components/menu/index.vue';
-import { IconUser } from '@arco-design/web-vue/es/icon';
+import { computed, inject, ref } from "vue";
+import { Message } from "@arco-design/web-vue";
+import { useDark, useFullscreen } from "@vueuse/core";
+import { useAppStore, useUserStore } from "@/store";
+import useUser from "@/hooks/user";
+import Menu from "@/components/menu/index.vue";
+import { IconUser } from "@arco-design/web-vue/es/icon";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -143,11 +102,11 @@ const avatar = computed(() => {
 const appTitle = appStore.appTitle;
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
-  selector: 'body',
-  attribute: 'arco-theme',
-  valueDark: 'dark',
-  valueLight: 'light',
-  storageKey: 'arco-theme',
+  selector: "body",
+  attribute: "arco-theme",
+  valueDark: "dark",
+  valueLight: "light",
+  storageKey: "arco-theme",
   onChanged(dark: boolean) {
     // overridden default behavior
     appStore.toggleTheme(dark);
@@ -160,7 +119,7 @@ const setVisible = () => {
 const refBtn = ref();
 const triggerBtn = ref();
 const setPopoverVisible = () => {
-  const event = new MouseEvent('click', {
+  const event = new MouseEvent("click", {
     view: window,
     bubbles: true,
     cancelable: true,
@@ -171,7 +130,7 @@ const handleLogout = () => {
   logout();
 };
 const setDropDownVisible = () => {
-  const event = new MouseEvent('click', {
+  const event = new MouseEvent("click", {
     view: window,
     bubbles: true,
     cancelable: true,
@@ -182,7 +141,7 @@ const switchRoles = async () => {
   const res = await userStore.switchRoles();
   Message.success(res as string);
 };
-const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
+const toggleDrawerMenu = inject("toggleDrawerMenu") as () => void;
 </script>
 
 <style scoped lang="less">

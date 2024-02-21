@@ -25,5 +25,5 @@ const locale = computed(() => {
       return enUS;
   }
 });
-document.title = appStore.appTitle
+document.title = appStore.appTitle;
 </script>

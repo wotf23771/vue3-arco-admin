@@ -5,23 +5,23 @@
     </a-skeleton>
     <a-result v-else status="404">
       <template #subtitle>
-        {{ $t('userInfo.nodata') }}
+        {{ $t("userInfo.nodata") }}
       </template>
     </a-result>
   </a-card>
 </template>
 
 <script lang="ts" setup>
-  import useLoading from '@/hooks/loading';
+import useLoading from "@/hooks/loading";
 
-  const { loading, setLoading } = useLoading(true);
-  setTimeout(() => {
-    setLoading(false);
-  }, 500);
+const { loading, setLoading } = useLoading(true);
+setTimeout(() => {
+  setLoading(false);
+}, 500);
 </script>
 
 <style lang="less" scoped>
-  :deep(.arco-result) {
-    padding: 40px 32px 108px;
-  }
+:deep(.arco-result) {
+  padding: 40px 32px 108px;
+}
 </style>

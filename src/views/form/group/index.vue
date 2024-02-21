@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.form', 'menu.form.group']"/>
+    <Breadcrumb :items="['menu.form', 'menu.form.group']" />
     <a-form ref="formRef" layout="vertical" :model="formData">
       <a-space direction="vertical" :size="16">
         <a-card class="general-card">
           <template #title>
-            {{ $t('groupForm.title.video') }}
+            {{ $t("groupForm.title.video") }}
           </template>
           <a-row :gutter="80">
             <a-col :span="8">
@@ -145,7 +145,7 @@
         </a-card>
         <a-card class="general-card">
           <template #title>
-            {{ $t('groupForm.title.audio') }}
+            {{ $t("groupForm.title.audio") }}
           </template>
           <a-row :gutter="80">
             <a-col :span="8">
@@ -223,7 +223,7 @@
         </a-card>
         <a-card class="general-card" :bordered="false">
           <template #title>
-            {{ $t('groupForm.title.description') }}
+            {{ $t("groupForm.title.description") }}
           </template>
           <a-form-item
               :label="$t('groupForm.form.label.parameterDescription')"
@@ -238,10 +238,10 @@
       <div class="actions">
         <a-space>
           <a-button>
-            {{ $t('groupForm.reset') }}
+            {{ $t("groupForm.reset") }}
           </a-button>
           <a-button type="primary" :loading="loading" @click="onSubmitClick">
-            {{ $t('groupForm.submit') }}
+            {{ $t("groupForm.submit") }}
           </a-button>
         </a-space>
       </div>
@@ -250,12 +250,12 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
-import useLoading from '@/hooks/loading';
+import { ref } from "vue";
+import useLoading from "@/hooks/loading";
 
 const formData = ref({});
 const formRef = ref();
-const {loading, setLoading} = useLoading();
+const { loading, setLoading } = useLoading();
 const onSubmitClick = async () => {
   const res = await formRef.value?.validate();
   if (!res) {
@@ -269,7 +269,7 @@ const onSubmitClick = async () => {
 
 <script>
 export default {
-  name: 'Group',
+  name: "Group",
 };
 </script>
 

@@ -1,7 +1,7 @@
-import type { RouteRecordNormalized } from 'vue-router';
+import type { RouteRecordNormalized } from "vue-router";
 
-const modules = import.meta.glob('./modules/*.ts', { eager: true });
-const externalModules = import.meta.glob('./externalModules/*.ts', {
+const modules = import.meta.glob("./modules/*.ts", { eager: true });
+const externalModules = import.meta.glob("./externalModules/*.ts", {
   eager: true,
 });
 
@@ -21,5 +21,5 @@ export const appRoutes: RouteRecordNormalized[] = formatModules(modules, []);
 
 export const appExternalRoutes: RouteRecordNormalized[] = formatModules(
   externalModules,
-  []
+  [],
 );
