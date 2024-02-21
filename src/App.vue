@@ -1,5 +1,5 @@
 <template>
-  <a-config-provider :locale="locale" size="small">
+  <a-config-provider :locale="locale">
     <router-view />
     <global-setting />
   </a-config-provider>
@@ -11,7 +11,9 @@ import enUS from "@arco-design/web-vue/es/locale/lang/en-us";
 import zhCN from "@arco-design/web-vue/es/locale/lang/zh-cn";
 import GlobalSetting from "@/components/global-setting/index.vue";
 import useLocale from "@/hooks/locale";
+import { useAppStore } from "@/store";
 
+const appStore = useAppStore();
 const { currentLocale } = useLocale();
 const locale = computed(() => {
   switch (currentLocale.value) {
@@ -23,4 +25,5 @@ const locale = computed(() => {
       return enUS;
   }
 });
+document.title = appStore.appTitle
 </script>

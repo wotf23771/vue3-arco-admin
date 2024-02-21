@@ -10,7 +10,7 @@
             :style="{ margin: 0, fontSize: '18px' }"
             :heading="5"
         >
-          工作流管理
+          {{ appTitle }}
         </a-typography-title>
         <icon-menu-fold
             v-if="!topMenu && appStore.device === 'mobile'"
@@ -140,6 +140,7 @@ const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const avatar = computed(() => {
   return userStore.avatar;
 });
+const appTitle = appStore.appTitle;
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
   selector: 'body',
