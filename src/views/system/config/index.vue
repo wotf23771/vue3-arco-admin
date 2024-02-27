@@ -37,6 +37,18 @@
         </a-col>
       </a-row>
       <a-divider style="margin-top: 0" />
+      <a-row style="margin-bottom: 16px">
+        <a-col :span="12">
+          <a-space>
+            <a-button type="primary" @click="handleAdd">
+              <template #icon>
+                <icon-plus />
+              </template>
+              新建
+            </a-button>
+          </a-space>
+        </a-col>
+      </a-row>
       <a-table
           row-key="id"
           :loading="loading"
@@ -70,12 +82,19 @@
         />
       </div>
     </a-card>
+    <a-modal v-model:visible="configAddVisible">
+      <template #title>
+        Title
+      </template>
+      <config-add v-if="configAddVisible" ref="configAddRef"></config-add>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
 import { queryConfig } from "@/api/system/config";
+import ConfigAdd from "./ConfigAdd.vue";
 
 const loading = ref(false);
 const queryParam = reactive({
@@ -126,6 +145,13 @@ const loadTableData = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+// config add
+const configAddRef = ref();
+const configAddVisible = ref(false);
+const handleAdd = () => {
+  configAddVisible.value = true;
 };
 </script>
 
