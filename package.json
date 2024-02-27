@@ -6,14 +6,14 @@
   "author": "ArcoDesign Team",
   "license": "MIT",
   "scripts": {
+    "install": "npm install",
     "dev": "vite --config ./config/vite.config.dev.ts",
     "build": "vite build --config ./config/vite.config.prod.ts",
-    "report": "cross-env REPORT=true npm run build",
     "preview": "npm run build && vite preview --host",
     "type:check": "vue-tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@arco-design/web-vue": "2.54.4",
+    "@arco-design/web-vue": "2.54.5",
     "@vueuse/core": "10.7.2",
     "axios": "1.6.7",
     "dayjs": "1.11.10",
