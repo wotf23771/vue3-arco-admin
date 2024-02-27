@@ -5,10 +5,10 @@
         <div class="tab-bar-scroll">
           <div class="tags-wrap">
             <tab-item
-                v-for="(tag, index) in tagList"
-                :key="tag.fullPath"
-                :index="index"
-                :item-data="tag"
+              v-for="(tag, index) in tagList"
+              :key="tag.fullPath"
+              :index="index"
+              :item-data="tag"
             />
           </div>
         </div>
@@ -19,12 +19,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onUnmounted } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import type { RouteLocationNormalized } from "vue-router";
-import {
-  listenerRouteChange,
-  removeRouteListener,
-} from "@/utils/route-listener";
+import { listenerRouteChange, removeRouteListener } from "@/utils/route-listener";
 import { useAppStore, useTabBarStore } from "@/store";
 import tabItem from "./tab-item.vue";
 
@@ -40,16 +37,17 @@ const offsetTop = computed(() => {
 });
 
 watch(
-    () => appStore.navbar,
-    () => {
-      affixRef.value.updatePosition();
-    },
+  () => appStore.navbar,
+  () => {
+    affixRef.value.updatePosition();
+  }
 );
 listenerRouteChange((route: RouteLocationNormalized) => {
   if (
-      !route.meta.noAffix &&
-      !tagList.value.some((tag) => tag.fullPath === route.fullPath)
+    !route.meta.noAffix &&
+    !tagList.value.some((tag) => tag.fullPath === route.fullPath)
   ) {
+    console.log("router change", route);
     tabBarStore.updateTabList(route);
   }
 }, true);

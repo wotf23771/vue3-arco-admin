@@ -9,7 +9,7 @@ const RESULT: AppRouteRecordRaw = {
     locale: "menu.result",
     icon: "icon-check-circle",
     requiresAuth: true,
-    order: 5,
+    order: 5
   },
   children: [
     {
@@ -20,7 +20,8 @@ const RESULT: AppRouteRecordRaw = {
         locale: "menu.result.success",
         requiresAuth: true,
         roles: ["admin"],
-      },
+        hideInMenu: true
+      }
     },
     {
       path: "error",
@@ -30,9 +31,10 @@ const RESULT: AppRouteRecordRaw = {
         locale: "menu.result.error",
         requiresAuth: true,
         roles: ["admin"],
-      },
-    },
-  ],
+        hideInMenu: true
+      }
+    }
+  ]
 };
 
 export default RESULT;

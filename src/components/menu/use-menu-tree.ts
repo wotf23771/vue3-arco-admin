@@ -14,7 +14,6 @@ export default function useMenuTree() {
     }
     return appClientMenus;
   });
-  console.log("t", appRoute.value);
   let menuTree = computed(() => {
     const copyRouter = cloneDeep(appRoute.value) as RouteRecordNormalized[];
     copyRouter.sort((a: RouteRecordNormalized, b: RouteRecordNormalized) => {
@@ -38,7 +37,7 @@ export default function useMenuTree() {
 
         // route filter hideInMenu true
         element.children = element.children.filter(
-          (x) => x.meta?.hideInMenu !== true,
+          (x) => x.meta?.hideInMenu !== true
         );
 
         // Associated child node
@@ -66,42 +65,42 @@ export default function useMenuTree() {
     return travel(copyRouter, 0);
   });
 
-  menuTree = computed(() => {
-    return [
-      {
-        path: "/dashboard/workplace",
-        name: "dashboard",
-        meta: {
-          locale: "首页",
-          requiresAuth: true,
-          icon: "icon-dashboard",
-          order: 0,
-        },
-      },
-      {
-        path: "/list/search-table",
-        name: "m1",
-        meta: {
-          locale: "列表1",
-          requiresAuth: true,
-          icon: "icon-dashboard",
-          order: 1,
-        },
-      },
-      {
-        path: "/list/card",
-        name: "m2",
-        meta: {
-          locale: "列表2",
-          requiresAuth: true,
-          icon: "icon-dashboard",
-          order: 3,
-        },
-      },
-    ];
-  });
+  // menuTree = computed(() => {
+  //   return [
+  //     {
+  //       path: "/dashboard/workplace",
+  //       name: "dashboard",
+  //       meta: {
+  //         locale: "首页",
+  //         requiresAuth: true,
+  //         icon: "icon-dashboard",
+  //         order: 0
+  //       }
+  //     },
+  //     {
+  //       path: "/app/index",
+  //       name: "m1",
+  //       meta: {
+  //         locale: "应用管理",
+  //         requiresAuth: true,
+  //         icon: "icon-dashboard",
+  //         order: 1
+  //       }
+  //     },
+  //     {
+  //       path: "/list/card",
+  //       name: "m2",
+  //       meta: {
+  //         locale: "列表2",
+  //         requiresAuth: true,
+  //         icon: "icon-dashboard",
+  //         order: 3
+  //       }
+  //     }
+  //   ];
+  // });
 
   return {
-    menuTree,
+    menuTree
   };
 }

@@ -1,6 +1,5 @@
 <script lang="tsx">
 import { compile, computed, defineComponent, h, ref } from "vue";
-import { useI18n } from "vue-i18n";
 import type { RouteMeta } from "vue-router";
 import { RouteRecordRaw, useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/store";
@@ -11,7 +10,6 @@ import useMenuTree from "./use-menu-tree";
 export default defineComponent({
   emit: ["collapse"],
   setup() {
-    const { t } = useI18n();
     const appStore = useAppStore();
     const router = useRouter();
     const route = useRoute();
@@ -24,7 +22,7 @@ export default defineComponent({
       },
       set(value: boolean) {
         appStore.updateSettings({ menuCollapse: value });
-      },
+      }
     });
 
     const topMenu = computed(() => appStore.topMenu);
@@ -46,7 +44,7 @@ export default defineComponent({
       }
       // Trigger router change
       router.push({
-        path: item.path,
+        name: item.name
       });
     };
     const findMenuOpenKeys = (target: string) => {
@@ -74,14 +72,14 @@ export default defineComponent({
       const { requiresAuth, activeMenu, hideInMenu } = newRoute.meta;
       if (requiresAuth && (!hideInMenu || activeMenu)) {
         const menuOpenKeys = findMenuOpenKeys(
-            (activeMenu || newRoute.name) as string,
+          (activeMenu || newRoute.name) as string
         );
 
         const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
         openKeys.value = [...keySet];
 
         selectedKey.value = [
-          activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
+          activeMenu || menuOpenKeys[menuOpenKeys.length - 1]
         ];
       }
     }, true);
@@ -96,28 +94,28 @@ export default defineComponent({
           _route.forEach((element) => {
             // This is demo, modify nodes as needed
             const icon = element?.meta?.icon
-                ? () => h(compile(`<${element?.meta?.icon}/>`))
-                : null;
+              ? () => h(compile(`<${element?.meta?.icon}/>`))
+              : null;
             const node =
-                element?.children && element?.children.length !== 0 ? (
-                    <a-sub-menu
-                        key={element?.name}
-                        v-slots={{
-                          icon,
-                          title: () => h(compile(t(element?.meta?.locale || ""))),
-                        }}
-                    >
-                      {travel(element?.children)}
-                    </a-sub-menu>
-                ) : (
-                    <a-menu-item
-                        key={element?.name}
-                        v-slots={{ icon }}
-                        onClick={() => goto(element)}
-                    >
-                      {t(element?.meta?.locale || "")}
-                    </a-menu-item>
-                );
+              element?.children && element?.children.length !== 0 ? (
+                <a-sub-menu
+                  key={element?.name}
+                  v-slots={{
+                    icon,
+                    title: () => h(compile(element?.meta?.locale || ""))
+                  }}
+                >
+                  {travel(element?.children)}
+                </a-sub-menu>
+              ) : (
+                <a-menu-item
+                  key={element?.name}
+                  v-slots={{ icon }}
+                  onClick={() => goto(element)}
+                >
+                  {element?.meta?.locale || ""}
+                </a-menu-item>
+              );
             nodes.push(node as never);
           });
         }
@@ -128,22 +126,22 @@ export default defineComponent({
     };
 
     return () => (
-        <a-menu
-            mode={topMenu.value ? "horizontal" : "vertical"}
-            v-model:collapsed={collapsed.value}
-            v-model:open-keys={openKeys.value}
-            show-collapse-button={appStore.device !== "mobile"}
-            auto-open={false}
-            selected-keys={selectedKey.value}
-            auto-open-selected={true}
-            level-indent={34}
-            style="height: 100%;width:100%;"
-            onCollapse={setCollapse}
-        >
-          {renderSubMenu()}
-        </a-menu>
+      <a-menu
+        mode={topMenu.value ? "horizontal" : "vertical"}
+        v-model:collapsed={collapsed.value}
+        v-model:open-keys={openKeys.value}
+        show-collapse-button={appStore.device !== "mobile"}
+        auto-open={false}
+        selected-keys={selectedKey.value}
+        auto-open-selected={true}
+        level-indent={34}
+        style="height: 100%;width:100%;"
+        onCollapse={setCollapse}
+      >
+        {renderSubMenu()}
+      </a-menu>
     );
-  },
+  }
 });
 </script>
 
