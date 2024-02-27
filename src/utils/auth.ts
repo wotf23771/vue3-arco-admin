@@ -1,19 +1,27 @@
-const TOKEN_KEY = "token";
-
+const TOKEN_KEY = "access_token";
+const PATH_KEY = "LastPath";
 const isLogin = () => {
-  return !!localStorage.getItem(TOKEN_KEY);
+  return !!sessionStorage.getItem(TOKEN_KEY);
 };
 
 const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+  return sessionStorage.getItem(TOKEN_KEY);
 };
 
 const setToken = (token: string) => {
-  localStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(TOKEN_KEY, token);
 };
 
 const clearToken = () => {
-  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
 };
 
-export { isLogin, getToken, setToken, clearToken };
+const saveLastPath = (path: string) => {
+  sessionStorage.setItem(PATH_KEY, path);
+};
+
+const getLastPath = () => {
+  return sessionStorage.getItem(PATH_KEY);
+};
+
+export { isLogin, getToken, setToken, clearToken, saveLastPath, getLastPath };
