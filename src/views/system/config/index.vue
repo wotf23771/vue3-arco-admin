@@ -3,31 +3,31 @@
     <a-card>
       <a-row>
         <a-col :flex="1">
-          <a-form
-            :model="queryParam"
-            :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 18 }"
-            label-align="left"
-          >
+          <a-form :model="queryParam" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" label-align="right">
             <a-row>
               <a-col :span="6">
                 <a-form-item field="name" label="参数名称">
-                  <a-input v-model="queryParam.name" placeholder="请输入参数名称" />
+                  <a-input v-model="queryParam.name" placeholder="请输入参数名称" allow-clear />
                 </a-form-item>
               </a-col>
+              <a-col :span="6">
+                <a-form-item field="name" label="参数编码">
+                  <a-input v-model="queryParam.code" placeholder="请输入参数编码" allow-clear />
+                </a-form-item>
+              </a-col>
+
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
         <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary">
+          <a-space :size="18">
+            <a-button type="primary" @click="search(true)">
               <template #icon>
                 <icon-search />
               </template>
               查询
             </a-button>
-            <a-button>
+            <a-button @click="reset">
               <template #icon>
                 <icon-refresh />
               </template>
@@ -36,7 +36,39 @@
           </a-space>
         </a-col>
       </a-row>
-
+      <a-divider style="margin-top: 0" />
+      <a-table
+          row-key="id"
+          :loading="loading"
+          :pagination="false"
+          :data="tableData"
+          page-position="tr"
+          :bordered="false"
+      >
+        <template #columns>
+          <a-table-column title="参数名称" data-index="name"></a-table-column>
+          <a-table-column title="参数编码" data-index="code"></a-table-column>
+          <a-table-column title="排序号" data-index="sn"></a-table-column>
+          <a-table-column title="操作" align="center" width="160">
+            <template #cell="{ record }">
+              <a-space>
+                <a-link :hoverable="false">修改</a-link>
+                <a-link :hoverable="false" status="danger">删除</a-link>
+              </a-space>
+            </template>
+          </a-table-column>
+        </template>
+      </a-table>
+      <div style="margin-top:5px;">
+        <a-pagination
+            :current="tablePagination.pageNo"
+            :page-size="tablePagination.pageSize"
+            :total="tablePagination.totalCount"
+            show-total show-jumper
+            @change="handleTablePageChange"
+            @page-size-change="handleTablePageSizeChange"
+        />
+      </div>
     </a-card>
   </div>
 </template>
@@ -45,31 +77,64 @@
 import { onMounted, reactive, ref } from "vue";
 import { queryConfig } from "@/api/system/config";
 
+const loading = ref(false);
 const queryParam = reactive({
-  name: ""
+  name: "",
+  code: "",
 });
-const pageParam = reactive({
+const tableData = ref([]);
+const tablePagination = reactive({
   pageNo: 1,
-  pageSize: 10,
-  totalCount: 0
+  pageSize: 5,
+  totalCount: 0,
 });
-const dataList = ref([]);
+const handleTablePageChange = (pageNo) => {
+  tablePagination.pageNo = pageNo;
+  loadTableData();
+};
+const handleTablePageSizeChange = (pageSize) => {
+  tablePagination.pageSize = pageSize;
+  loadTableData();
+};
 
 onMounted(() => {
   loadTableData();
 });
 
-const loadTableData = () => {
-  queryConfig(pageParam, queryParam).then(response => {
-    console.log(response);
-    dataList.value = response.data;
-    pageParam.totalCount = response.page.totalCount;
-  });
+// 搜索
+const search = (first = true) => {
+  if (first) {
+    tablePagination.pageNo = 1;
+  }
+  loadTableData();
+};
+
+const reset = () => {
+  queryParam.name = "";
+  queryParam.code = "";
+  search();
+};
+const loadTableData = async () => {
+  try {
+    loading.value = true;
+    const { data, page } = await queryConfig(tablePagination, queryParam);
+    tableData.value = data;
+    tablePagination.totalCount = page.totalCount;
+  } catch (err) {
+    loading.value = false;
+    console.log("err", err);
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 
 <style scoped lang="less">
 .container {
   padding: 20px;
+}
+
+.arco-pagination {
+  justify-content: flex-end;
 }
 </style>
