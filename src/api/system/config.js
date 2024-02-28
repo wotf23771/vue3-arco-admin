@@ -33,3 +33,11 @@ export function updateConfig(id, form) {
     data: form,
   });
 }
+
+export function deleteConfig(id) {
+  return request({
+    url: "/config/deleteConfig",
+    method: "post",
+    params: { id },
+  });
+}

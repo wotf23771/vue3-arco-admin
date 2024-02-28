@@ -59,10 +59,21 @@
       >
         <template #columns>
           <a-table-column title="序号" data-index="index" width="80" align="center"></a-table-column>
-          <a-table-column title="配置范围" data-index="scopeType" width="120" align="center"></a-table-column>
+          <a-table-column title="配置范围" width="120" align="center">
+            <template #cell="{ record }">
+              <a-tag v-if="record.scopeType=='DEFAULT'">全局</a-tag>
+              <a-tag v-if="record.scopeType=='UNIT'">单位</a-tag>
+              <a-tag v-if="record.scopeType=='USER'">用户</a-tag>
+            </template>
+          </a-table-column>
           <a-table-column title="参数名称" data-index="name"></a-table-column>
           <a-table-column title="参数编码" data-index="code"></a-table-column>
-          <a-table-column title="配置类型" data-index="type" width="120" align="center"></a-table-column>
+          <a-table-column title="配置类型" width="120" align="center">
+            <template #cell="{ record }">
+              <a-tag v-if="record.type=='VALUE'">固定配置</a-tag>
+              <a-tag v-if="record.type=='LIST'">列表配置</a-tag>
+            </template>
+          </a-table-column>
           <a-table-column title="是否启用" width="120" align="center">
             <template #cell="{ record }">
               <a-switch v-model="record.isEnabled" :default-checked="true" type="round" :unchecked-value="0" :checked-value="1" disabled />
@@ -73,7 +84,10 @@
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="handleEdit(record)">修改</a-link>
-                <a-link :hoverable="false" status="danger">删除</a-link>
+                <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
+                  <a-link :hoverable="false" status="danger">删除</a-link>
+                </a-popconfirm>
+                <a-link :hoverable="false">配置</a-link>
               </a-space>
             </template>
           </a-table-column>
@@ -123,9 +137,10 @@
 
 <script setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
-import { queryConfig } from "@/api/system/config";
+import { deleteConfig, queryConfig } from "@/api/system/config";
 import ConfigAdd from "./ConfigAdd.vue";
 import ConfigEdit from "./ConfigEdit.vue";
+import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
 const queryParam = reactive({
@@ -212,6 +227,22 @@ const handleConfigEditOk = async () => {
 };
 const handleConfigEditCancel = () => {
   configEditVisible.value = false;
+};
+
+// config delete
+const handleDelete = async (record) => {
+  try {
+    loading.value = true;
+    const { success, message } = await deleteConfig(record.id);
+    if (success) {
+      Message.success("删除成功");
+      search(false);
+    } else {
+      Message.error(message || "删除失败");
+    }
+  } catch (err) {
+    loading.value = false;
+  }
 };
 </script>
 

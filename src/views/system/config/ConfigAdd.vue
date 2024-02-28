@@ -30,7 +30,7 @@
           <a-form-item field="value1" label="配置类型" label-col-flex="80px">
             <a-radio-group type="button" v-model="form.type">
               <a-radio value="VALUE">固定配置</a-radio>
-              <a-radio value="LIST">选项列表</a-radio>
+              <a-radio value="LIST">列表配置</a-radio>
             </a-radio-group>
           </a-form-item>
         </a-col>
