@@ -82,11 +82,16 @@
         />
       </div>
     </a-card>
-    <a-modal v-model:visible="configAddVisible">
+    <a-modal v-model:visible="configAddVisible" title-align="start" draggable>
       <template #title>
-        Title
+        <icon-plus />
+        新建参数
       </template>
       <config-add v-if="configAddVisible" ref="configAddRef"></config-add>
+      <template #footer>
+        <a-button @click="handleConfigAddCancel">取消</a-button>
+        <a-button @click='handleConfigAddOk' type="primary">保存</a-button>
+      </template>
     </a-modal>
   </div>
 </template>
@@ -152,6 +157,15 @@ const configAddRef = ref();
 const configAddVisible = ref(false);
 const handleAdd = () => {
   configAddVisible.value = true;
+};
+const handleConfigAddOk = (event) => {
+  configAddRef.value.handleSubmit();
+  console.log(event);
+  configAddVisible.value = false;
+};
+const handleConfigAddCancel = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
 };
 </script>
 
