@@ -260,6 +260,7 @@ const handleDelete = async (record) => {
     } else {
       Message.error(message || "删除失败");
     }
+    loading.value = false;
   } catch (err) {
     loading.value = false;
   }
