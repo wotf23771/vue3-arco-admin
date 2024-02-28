@@ -3,17 +3,17 @@
     <div class="login-form-title">登录</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
-      ref="loginForm"
-      :model="userInfo"
-      class="login-form"
-      layout="vertical"
-      @submit="handleSubmit"
+        ref="loginForm"
+        :model="userInfo"
+        class="login-form"
+        layout="vertical"
+        @submit="handleSubmit"
     >
       <a-form-item
-        field="username"
-        :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
-        :validate-trigger="['change', 'blur']"
-        hide-label
+          field="username"
+          :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
       >
         <a-input v-model="userInfo.username" :placeholder="$t('login.form.userName.placeholder')">
           <template #prefix>
@@ -22,15 +22,15 @@
         </a-input>
       </a-form-item>
       <a-form-item
-        field="password"
-        :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
-        :validate-trigger="['change', 'blur']"
-        hide-label
+          field="password"
+          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
       >
         <a-input-password
-          v-model="userInfo.password"
-          :placeholder="$t('login.form.password.placeholder')"
-          allow-clear
+            v-model="userInfo.password"
+            :placeholder="$t('login.form.password.placeholder')"
+            allow-clear
         >
           <template #prefix>
             <icon-lock />
@@ -40,9 +40,9 @@
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
           <a-checkbox
-            checked="rememberPassword"
-            :model-value="loginConfig.rememberPassword"
-            @change="setRememberPassword as any"
+              checked="rememberPassword"
+              :model-value="loginConfig.rememberPassword"
+              @change="setRememberPassword as any"
           >
             {{ $t("login.form.rememberPassword") }}
           </a-checkbox>
@@ -76,11 +76,11 @@ const userStore = useUserStore();
 const loginConfig = useStorage("login-config", {
   rememberPassword: true,
   username: "admin", // 演示默认值
-  password: "admin" // demo default value
+  password: "admin", // demo default value
 });
 const userInfo = reactive({
   username: loginConfig.value.username,
-  password: loginConfig.value.password
+  password: loginConfig.value.password,
 });
 
 const handleSubmit = async ({ errors, values }: {
@@ -94,10 +94,10 @@ const handleSubmit = async ({ errors, values }: {
       await userStore.login(values as LoginData);
       const { redirect, ...othersQuery } = router.currentRoute.value.query;
       router.push({
-        name: (redirect as string) || "dashboard",
+        name: (redirect as string) || "workplace",
         query: {
-          ...othersQuery
-        }
+          ...othersQuery,
+        },
       });
       Message.success(t("login.form.login.success"));
       const { rememberPassword } = loginConfig.value;
