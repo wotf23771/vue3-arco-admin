@@ -87,10 +87,12 @@
         <icon-plus />
         新建参数
       </template>
-      <config-add v-if="configAddVisible" ref="configAddRef"></config-add>
+      <config-add v-if="configAddVisible" ref="configAddRef" @success="search(false)"></config-add>
       <template #footer>
         <a-button @click="handleConfigAddCancel">取消</a-button>
-        <a-button @click='handleConfigAddOk' type="primary">保存</a-button>
+        <a-popconfirm content="确定要保存？" @ok="handleConfigAddOk">
+          <a-button type="primary">保存</a-button>
+        </a-popconfirm>
       </template>
     </a-modal>
   </div>
@@ -158,14 +160,14 @@ const configAddVisible = ref(false);
 const handleAdd = () => {
   configAddVisible.value = true;
 };
-const handleConfigAddOk = (event) => {
-  configAddRef.value.handleSubmit();
-  console.log(event);
-  configAddVisible.value = false;
+const handleConfigAddOk = async () => {
+  const result = await configAddRef.value.handleSubmit();
+  if (result) {
+    configAddVisible.value = false;
+  }
 };
-const handleConfigAddCancel = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
+const handleConfigAddCancel = () => {
+  configAddVisible.value = false;
 };
 </script>
 
