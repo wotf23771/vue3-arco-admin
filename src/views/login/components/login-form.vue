@@ -94,7 +94,7 @@ const handleSubmit = async ({ errors, values }: {
       await userStore.login(values as LoginData);
       const { redirect, ...othersQuery } = router.currentRoute.value.query;
       router.push({
-        name: (redirect as string) || "workplace",
+        name: (redirect as string) || "Workplace",
         query: {
           ...othersQuery,
         },
