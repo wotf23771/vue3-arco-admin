@@ -6,16 +6,32 @@
           <a-form :model="queryParam" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" label-align="right">
             <a-row>
               <a-col :span="6">
-                <a-form-item field="name" label="参数名称">
+                <a-form-item label="配置范围">
+                  <a-select :style="{width:'200px'}" v-model="queryParam.scopeType" placeholder="请选择" allow-clear>
+                    <a-option value="DEFAULT">全局</a-option>
+                    <a-option value="UNIT">单位</a-option>
+                    <a-option value="USER">用户</a-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="参数名称">
                   <a-input v-model="queryParam.name" placeholder="请输入参数名称" allow-clear />
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="name" label="参数编码">
+                <a-form-item label="参数编码">
                   <a-input v-model="queryParam.code" placeholder="请输入参数编码" allow-clear />
                 </a-form-item>
               </a-col>
-
+              <a-col :span="6">
+                <a-form-item label="配置类型">
+                  <a-select :style="{width:'200px'}" v-model="queryParam.type" placeholder="请选择" allow-clear>
+                    <a-option value="VALUE">固定配置</a-option>
+                    <a-option value="LIST">列表配置</a-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
         </a-col>
@@ -144,8 +160,10 @@ import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
 const queryParam = reactive({
+  scopeType: "",
   name: "",
   code: "",
+  type: "",
 });
 const tableData = ref([]);
 const tablePagination = reactive({
@@ -175,6 +193,8 @@ const search = (first = true) => {
 };
 
 const reset = () => {
+  queryParam.scopeType = "";
+  queryParam.type = "";
   queryParam.name = "";
   queryParam.code = "";
   search();
