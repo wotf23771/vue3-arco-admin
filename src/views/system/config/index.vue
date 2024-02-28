@@ -58,13 +58,21 @@
           :bordered="false"
       >
         <template #columns>
+          <a-table-column title="序号" data-index="index" width="80" align="center"></a-table-column>
+          <a-table-column title="配置范围" data-index="scopeType" width="120" align="center"></a-table-column>
           <a-table-column title="参数名称" data-index="name"></a-table-column>
           <a-table-column title="参数编码" data-index="code"></a-table-column>
-          <a-table-column title="排序号" data-index="sn"></a-table-column>
+          <a-table-column title="配置类型" data-index="type" width="120" align="center"></a-table-column>
+          <a-table-column title="是否启用" width="120" align="center">
+            <template #cell="{ record }">
+              <a-switch v-model="record.isEnabled" :default-checked="true" type="round" :unchecked-value="0" :checked-value="1" disabled />
+            </template>
+          </a-table-column>
+          <a-table-column title="排序号" data-index="sn" width="100" align="right"></a-table-column>
           <a-table-column title="操作" align="center" width="160">
             <template #cell="{ record }">
               <a-space>
-                <a-link :hoverable="false">修改</a-link>
+                <a-link :hoverable="false" @click="handleEdit(record)">修改</a-link>
                 <a-link :hoverable="false" status="danger">删除</a-link>
               </a-space>
             </template>
@@ -82,6 +90,7 @@
         />
       </div>
     </a-card>
+
     <a-modal v-model:visible="configAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
@@ -95,13 +104,28 @@
         </a-popconfirm>
       </template>
     </a-modal>
+
+    <a-modal v-model:visible="configEditVisible" title-align="start" draggable>
+      <template #title>
+        <icon-edit />
+        修改参数
+      </template>
+      <config-edit v-if="configEditVisible" ref="configEditRef" @success="search(false)"></config-edit>
+      <template #footer>
+        <a-button @click="handleConfigEditCancel">取消</a-button>
+        <a-popconfirm content="确定要更新？" @ok="handleConfigEditOk">
+          <a-button type="primary">更新</a-button>
+        </a-popconfirm>
+      </template>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import { queryConfig } from "@/api/system/config";
 import ConfigAdd from "./ConfigAdd.vue";
+import ConfigEdit from "./ConfigEdit.vue";
 
 const loading = ref(false);
 const queryParam = reactive({
@@ -111,7 +135,7 @@ const queryParam = reactive({
 const tableData = ref([]);
 const tablePagination = reactive({
   pageNo: 1,
-  pageSize: 5,
+  pageSize: 10,
   totalCount: 0,
 });
 const handleTablePageChange = (pageNo) => {
@@ -168,6 +192,26 @@ const handleConfigAddOk = async () => {
 };
 const handleConfigAddCancel = () => {
   configAddVisible.value = false;
+};
+
+// config update
+const configEditRef = ref();
+const configEditVisible = ref(false);
+// 点击修改
+const handleEdit = (record) => {
+  configEditVisible.value = true;
+  nextTick(() => {
+    configEditRef.value.init(record.id);
+  });
+};
+const handleConfigEditOk = async () => {
+  const result = await configEditRef.value.handleSubmit();
+  if (result) {
+    configEditVisible.value = false;
+  }
+};
+const handleConfigEditCancel = () => {
+  configEditVisible.value = false;
 };
 </script>
 

@@ -16,3 +16,20 @@ export function saveConfig(form) {
     data: form,
   });
 }
+
+export function getConfig(id) {
+  return request({
+    url: "/config/getConfig",
+    method: "get",
+    params: { id },
+  });
+}
+
+export function updateConfig(id, form) {
+  return request({
+    url: "/config/updateConfig",
+    method: "post",
+    params: { id },
+    data: form,
+  });
+}
