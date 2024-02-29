@@ -9,7 +9,7 @@ const FORM: AppRouteRecordRaw = {
     locale: "流程定义",
     icon: "icon-code",
     requiresAuth: true,
-    order: 3
+    order: 3,
   },
   children: [
     {
@@ -19,10 +19,21 @@ const FORM: AppRouteRecordRaw = {
       meta: {
         locale: "流程配置",
         icon: "icon-share-alt",
-        requiresAuth: true
-      }
-    }
-  ]
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "flowmanedit",
+      name: "flowmanedit",
+      component: () => import("@/views/def/config/flow-edit.vue"),
+      meta: {
+        locale: "流程配置",
+        icon: "icon-share-alt",
+        requiresAuth: true,
+        hideInMenu: true,
+      },
+    },
+  ],
 };
 
 export default FORM;

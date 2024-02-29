@@ -21,43 +21,43 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       // production
       configCompressPlugin("gzip"),
       configVisualizerPlugin(),
-      configArcoResolverPlugin()
+      configArcoResolverPlugin(),
     ],
     resolve: {
       alias: [
         {
           find: "@",
-          replacement: resolve(__dirname, "../src")
+          replacement: resolve(__dirname, "../src"),
         },
         {
           find: "assets",
-          replacement: resolve(__dirname, "../src/assets")
+          replacement: resolve(__dirname, "../src/assets"),
         },
         {
           find: "vue-i18n",
-          replacement: "vue-i18n/dist/vue-i18n.cjs.js" // Resolve the i18n warning issue
+          replacement: "vue-i18n/dist/vue-i18n.cjs.js", // Resolve the i18n warning issue
         },
         {
           find: "vue",
-          replacement: "vue/dist/vue.esm-bundler.js" // compile template
-        }
+          replacement: "vue/dist/vue.esm-bundler.js", // compile template
+        },
       ],
-      extensions: [".ts", ".js"]
+      extensions: [".ts", ".js"],
     },
     define: {
-      "process.env": {}
+      "process.env": {},
     },
     css: {
       preprocessorOptions: {
         less: {
           modifyVars: {
             hack: `true; @import (reference) "${resolve(
-              "src/assets/style/breakpoint.less"
-            )}";`
+              "src/assets/style/breakpoint.less",
+            )}";`,
           },
-          javascriptEnabled: true
-        }
-      }
+          javascriptEnabled: true,
+        },
+      },
     },
     build: {
       rollupOptions: {
@@ -65,18 +65,18 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           manualChunks: {
             arco: ["@arco-design/web-vue"],
             chart: ["echarts", "vue-echarts"],
-            vue: ["vue", "vue-router", "pinia", "@vueuse/core", "vue-i18n"]
-          }
-        }
+            vue: ["vue", "vue-router", "pinia", "@vueuse/core", "vue-i18n"],
+          },
+        },
       },
-      chunkSizeWarningLimit: 2000
+      chunkSizeWarningLimit: 2000,
     },
     server: {
       open: false,
       port: 8000,
       fs: {
-        strict: true
-      }
-    }
+        strict: true,
+      },
+    },
   };
 };

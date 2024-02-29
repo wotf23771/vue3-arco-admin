@@ -5,10 +5,10 @@
         <div class="tab-bar-scroll">
           <div class="tags-wrap">
             <tab-item
-              v-for="(tag, index) in tagList"
-              :key="tag.fullPath"
-              :index="index"
-              :item-data="tag"
+                v-for="(tag, index) in tagList"
+                :key="tag.fullPath"
+                :index="index"
+                :item-data="tag"
             />
           </div>
         </div>
@@ -37,17 +37,16 @@ const offsetTop = computed(() => {
 });
 
 watch(
-  () => appStore.navbar,
-  () => {
-    affixRef.value.updatePosition();
-  }
+    () => appStore.navbar,
+    () => {
+      affixRef.value.updatePosition();
+    },
 );
 listenerRouteChange((route: RouteLocationNormalized) => {
   if (
-    !route.meta.noAffix &&
-    !tagList.value.some((tag) => tag.fullPath === route.fullPath)
+      !route.meta.noAffix &&
+      !tagList.value.some((tag) => tag.fullPath === route.fullPath)
   ) {
-    console.log("router change", route);
     tabBarStore.updateTabList(route);
   }
 }, true);

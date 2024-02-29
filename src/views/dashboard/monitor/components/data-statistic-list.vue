@@ -19,12 +19,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, compile } from "vue";
+import { compile, computed, h } from "vue";
 import { useI18n } from "vue-i18n";
-import type {
-  TableColumnData,
-  TableData,
-} from "@arco-design/web-vue/es/table/interface.d";
+import type { TableColumnData, TableData } from "@arco-design/web-vue/es/table/interface.d";
 
 interface PreviewRecord {
   cover: string;
@@ -104,7 +101,7 @@ const columns = computed(() => {
 </script>
 
 <style lang="less">
-// Warning: Here is the global style
+// Warning: Here is the global styles
 .data-statistic {
   &-list {
     &-cover {
