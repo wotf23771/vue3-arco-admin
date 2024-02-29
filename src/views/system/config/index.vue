@@ -7,7 +7,7 @@
             <a-row>
               <a-col :span="6">
                 <a-form-item label="配置范围">
-                  <a-select :style="{width:'200px'}" v-model="queryParam.scopeType" placeholder="请选择" allow-clear>
+                  <a-select :style="{width:'160px'}" v-model="queryParam.scopeType" placeholder="请选择" allow-clear>
                     <a-option value="DEFAULT">全局</a-option>
                     <a-option value="UNIT">单位</a-option>
                     <a-option value="USER">用户</a-option>
@@ -26,7 +26,7 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="配置类型">
-                  <a-select :style="{width:'200px'}" v-model="queryParam.type" placeholder="请选择" allow-clear>
+                  <a-select :style="{width:'160px'}" v-model="queryParam.type" placeholder="请选择" allow-clear>
                     <a-option value="VALUE">固定配置</a-option>
                     <a-option value="LIST">列表配置</a-option>
                   </a-select>
@@ -103,7 +103,7 @@
                 <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
                   <a-link :hoverable="false" status="danger">删除</a-link>
                 </a-popconfirm>
-                <a-link :hoverable="false">配置</a-link>
+                <a-link :hoverable="false" @click="handleConfigValue(record)">配置</a-link>
               </a-space>
             </template>
           </a-table-column>
@@ -121,6 +121,7 @@
       </div>
     </a-card>
 
+    <!--新建参数 start-->
     <a-modal v-model:visible="configAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
@@ -128,13 +129,14 @@
       </template>
       <config-add v-if="configAddVisible" ref="configAddRef" @success="search(false)"></config-add>
       <template #footer>
-        <a-button @click="handleConfigAddCancel">取消</a-button>
+        <a-button @click="()=>{ configAddVisible = false }">取消</a-button>
         <a-popconfirm content="确定要保存？" @ok="handleConfigAddOk">
           <a-button type="primary">保存</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
-
+    <!--新建参数 end-->
+    <!--修改参数 start-->
     <a-modal v-model:visible="configEditVisible" title-align="start" draggable>
       <template #title>
         <icon-edit />
@@ -142,12 +144,16 @@
       </template>
       <config-edit v-if="configEditVisible" ref="configEditRef" @success="search(false)"></config-edit>
       <template #footer>
-        <a-button @click="handleConfigEditCancel">取消</a-button>
+        <a-button @click="()=>{ configEditVisible = false }">取消</a-button>
         <a-popconfirm content="确定要更新？" @ok="handleConfigEditOk">
           <a-button type="primary">更新</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
+    <!--修改参数 end-->
+    
+    <!--配置 全局-固定 -->
+    <default-value ref="defaultValueRef"></default-value>
   </div>
 </template>
 
@@ -157,6 +163,7 @@ import { deleteConfig, queryConfig } from "@/api/system/config";
 import ConfigAdd from "./ConfigAdd.vue";
 import ConfigEdit from "./ConfigEdit.vue";
 import { Message } from "@arco-design/web-vue";
+import DefaultValue from "@/views/system/config/DefaultValue.vue";
 
 const loading = ref(false);
 const queryParam = reactive({
@@ -225,9 +232,6 @@ const handleConfigAddOk = async () => {
     configAddVisible.value = false;
   }
 };
-const handleConfigAddCancel = () => {
-  configAddVisible.value = false;
-};
 
 // config update
 const configEditRef = ref();
@@ -244,9 +248,6 @@ const handleConfigEditOk = async () => {
   if (result) {
     configEditVisible.value = false;
   }
-};
-const handleConfigEditCancel = () => {
-  configEditVisible.value = false;
 };
 
 // config delete
@@ -265,6 +266,27 @@ const handleDelete = async (record) => {
     loading.value = false;
   }
 };
+
+// config value
+const defaultValueRef = ref();
+const handleConfigValue = (record) => {
+  const scopeType = record.scopeType;
+  const type = record.type;
+  if (scopeType == "DEFAULT") {
+    // 配置范围-全局
+    if (type == "VALUE") {
+      // 配置类型-固定
+      defaultValueRef.value.init(record);
+    } else if (type == "LIST") {
+      // 配置类型-列表
+    }
+  } else if (scopeType == "UNIT") {
+    // 配置范围-单位
+  } else if (scopeType == "USER") {
+    // 配置单位-用户
+  }
+};
+
 </script>
 
 <style scoped lang="less">

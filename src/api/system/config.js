@@ -41,3 +41,25 @@ export function deleteConfig(id) {
     params: { id },
   });
 }
+
+/**
+ * 获得配置固定值
+ * @param configId 配置ID
+ * @param scope 配置范围，全局范围为 DEFAULT，其他或单位ID或用户ID
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export function getConfigValue(configId, scope) {
+  return request({
+    url: "/config/getConfigValue",
+    method: "get",
+    params: { configId, scope },
+  });
+}
+
+export function updateConfigValue(configId, scope, value) {
+  return request({
+    url: "/config/updateConfigValue",
+    method: "post",
+    params: { configId, scope, value },
+  });
+}
