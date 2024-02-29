@@ -3,42 +3,42 @@
     <a-form load ref="formRef" :model="form" >
       <a-row :gutter="16">
         <a-col span="22">
-          <a-form-item field="appName"  label="应用名称" label-col-flex="80px" :rules="[{ required: true, message: '应用名称为空' }]">
+          <a-form-item field="appName"  label="应用名称" label-col-flex="120px" :rules="[{ required: true, message: '应用名称为空' }]">
             <a-input v-model="form.appName" placeholder="请输入应用名称" />
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="appId" label="应用id" label-col-flex="80px" :rules="[{ required: true, message: '应用id为空' }]">
-            <a-input v-model="form.appId" placeholder="请输入应用id" />
+          <a-form-item field="appId" label="应用标识" label-col-flex="120px" :rules="[{ required: true, message: '应用标识为空' }]">
+            <a-input v-model="form.appId" placeholder="请输入应用标识" />
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="appSecret" label="应用密钥" label-col-flex="80px" :rules="[{ required: true, message: '应用密钥为空' }]">
+          <a-form-item field="appSecret" label="应用密钥" label-col-flex="120px" :rules="[{ required: true, message: '应用密钥为空' }]">
             <a-input v-model="form.appSecret" placeholder="请输入应用密钥"/>
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="pcHost" label="PC端地址" label-col-flex="80px">
+          <a-form-item field="pcHost" label="PC端地址" label-col-flex="120px">
             <a-input v-model="form.pcHost" placeholder="请输入PC端地址"  />
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="mobileHost" label="移动端地址" label-col-flex="80px">
+          <a-form-item field="mobileHost" label="移动端地址" label-col-flex="120px">
             <a-input v-model="form.mobileHost" placeholder="请输入移动端地址" />
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="procCallback" label="流程事件回调地址" label-col-flex="80px">
+          <a-form-item field="procCallback" label="流程事件回调地址" label-col-flex="120px">
             <a-input v-model="form.procCallback" placeholder="请输入流程事件回调地址" />
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="taskCallback" label="任务事件回调地址" label-col-flex="80px">
+          <a-form-item field="taskCallback" label="任务事件回调地址" label-col-flex="120px">
             <a-input v-model="form.taskCallback" placeholder="请输入任务事件回调地址" />
           </a-form-item>
         </a-col>
         <a-col span="22">     
-          <a-form-item field="remark" label="备注" label-col-flex="80px">
+          <a-form-item field="remark" label="备注" label-col-flex="120px">
             <a-input v-model="form.remark" placeholder="请输入备注" />
           </a-form-item>
         </a-col>
@@ -58,7 +58,7 @@ const loading = ref(false);
 const id = ref('');
 const form = reactive({
   appName: '', //应用名称
-  appId: '',   //应用ID
+  appId: '',   //应用标识
   appSecret: '',
   pcHost: '',
   mobileHost: '',

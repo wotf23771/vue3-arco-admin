@@ -6,20 +6,22 @@
           <a-form :model="queryParam" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" label-align="right">
             <a-row>
               <a-col :span="6">
-                <a-form-item field="name" label="表单名称">
-                  <a-input v-model="queryParam.name" placeholder="请输入表单名称" allow-clear />
+                <a-form-item field="name" label="属性名称">
+                  <a-input v-model="queryParam.name" placeholder="请输入属性名称" allow-clear />
+
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="code" label="表单编码">
-                  <a-input v-model="queryParam.code" placeholder="请输入表单编码" allow-clear />
+                <a-form-item field="code" label="属性编码">
+                  <a-input v-model="queryParam.code" placeholder="请输入属性编码" allow-clear />
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="appId" label="所属应用">
-                  <a-select  v-model="queryParam.appId" placeholder="请选择" allow-clear>
-                    <a-option :key="app.appId" v-for="app of appDataList" :value="app.appId" :label="app.appName"></a-option>
-                    
+                <a-form-item field="dataType" label="数据类型">
+                  <a-select  v-model="queryParam.dataType" placeholder="请选择" allow-clear>
+                    <a-option value="date" label="日期"></a-option>
+                    <a-option value="number" label="数字"></a-option>
+                    <a-option value="text" label="文本"></a-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -52,7 +54,7 @@
               <template #icon>
                 <icon-plus />
               </template>
-              新增表单
+              新增属性
             </a-button>
           </a-space>
         </a-col>
@@ -67,11 +69,17 @@
       >
         <template #columns>
           <a-table-column title="序号" data-index="index" align="center" width="80"></a-table-column>
-          <a-table-column title="应用名称" data-index="appName" align="center" width="200"></a-table-column>
-          <a-table-column title="表单编码" data-index="code" align="center" width="200"></a-table-column>
-          <a-table-column title="表单名称" data-index="name" align="center" ></a-table-column>
-          <a-table-column title="排序" data-index="sn" align="right" width="80"></a-table-column>
-          <a-table-column title="操作" align="center" width="300">
+          <a-table-column title="属性编码" data-index="code" align="center" width="200"></a-table-column>
+          <a-table-column title="属性名称" data-index="name" align="center" width="200"></a-table-column>
+          <a-table-column title="数据类型"  align="center" width="120">
+            <template #cell="{ record }">
+              <a-tag v-if="record.dataType=='date'">日期</a-tag>
+              <a-tag v-if="record.dataType=='number'">数字</a-tag>
+              <a-tag v-if="record.dataType=='text'">文本</a-tag>
+             
+            </template>
+          </a-table-column>
+          <a-table-column title="操作" align="center" width="160">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="editData(record)" >修改</a-link>
@@ -79,8 +87,6 @@
                 <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
                   <a-link :hoverable="false" status="danger">删除</a-link>
                 </a-popconfirm>
-                <a-link :hoverable="false" @click="editProperty(record)" >配置属性</a-link>
-                <a-link :hoverable="false" @click="editPage(record)" >配置页面</a-link>
               </a-space>
             </template>
           </a-table-column>
@@ -98,77 +104,52 @@
       </div>
     </a-card>
     <!-- 新增弹窗 -->
-    <a-modal v-model:visible="formAddVisible" title-align="start" draggable>
+    <a-modal v-model:visible="formPropertyAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
         新增表单
       </template>
-      <form-add v-if="formAddVisible" ref="formAddRef" @success="search(false)"></form-add>
+      <form-property-add v-if="formPropertyAddVisible" ref="formPropertyAddRef" @success="search(false)"></form-property-add>
       <template #footer>
-        <a-button @click="handleFormAddCancel">取消</a-button>
-        <a-popconfirm content="确定要保存？" @ok="handleFormAddOk">
+        <a-button @click="handleFormPropertyAddCancel">取消</a-button>
+        <a-popconfirm content="确定要保存？" @ok="handleFormPropertyAddOk">
           <a-button type="primary">保存</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
     <!-- 编辑弹窗 -->
-    <a-modal v-model:visible="formEditVisible">
+    <a-modal v-model:visible="formPropertyEditVisible">
       <template #title>
           编辑表单
       </template>
-      <form-edit v-if="formEditVisible"  ref="formEditRef"  @success="search(false)"></form-edit>
+      <form-property-edit v-if="formPropertyEditVisible"  ref="formPropertyEditRef"  @success="search(false)"></form-property-edit>
       <template #footer>
-        <a-button @click="handleFormEditCancel">取消</a-button>
-        <a-popconfirm content="确定要更新？" @ok="handleFormEditOk">
+        <a-button @click="handleFormPropertyEditCancel">取消</a-button>
+        <a-popconfirm content="确定要更新？" @ok="handleFormPropertyEditOk">
           <a-button type="primary">更新</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
-    <!-- 配置属性抽屉 -->
-    <a-drawer
-    :width="1500"
-    :hide-cancel="true"
-    :visible="formPropertyVisible"   
-    @ok="handleFormPropertyOk"
-  >
-    <template #header>
-      <span>表单属性</span>
-    </template>
-   <form-property v-if="formPropertyVisible" ref="formPropertyRef" ></form-property>
-  </a-drawer>
-  <!-- 配置页面抽屉 -->
-  <a-drawer
-    :width="1500"
-    :hide-cancel="true"
-    :visible="formPageVisible"   
-    @ok="handleFormPageOk"
-  >
-    <template #header>
-      <span>表单页面</span>
-    </template>
-   <form-page v-if="formPageVisible" ref="formPageRef" ></form-page>
-  </a-drawer>
+   
   </div>
 </template>
 
 <script setup>
 
 import { nextTick, onMounted, reactive, ref } from "vue";
-import { appList } from "@/api/app/app";
-import { queryForm,deleteForm } from "@/api/app/form";
-import FormAdd from "./FormAdd.vue";
-import FormEdit from "./FormEdit.vue";
-import FormProperty from "./FormProperty.vue";
-import  FormPage  from "./FormPage.vue";
+import { queryFormProperty, deleteFormProperty } from "@/api/app/form";
+import FormPropertyAdd from "./FormPropertyAdd.vue";
+import FormPropertyEdit from "./FormPropertyEdit.vue";
 import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
 const queryParam = reactive({
+  formId:'',// 表单id
   name: "",
   code: "",
-  appId: "",
+  dataType: "",
 });
-const appDataList = ref([]);
+
 const tableData = ref([]);
 const tablePagination = reactive({
   pageNo: 1,
@@ -185,14 +166,12 @@ const handleTablePageSizeChange = (pageSize) => {
 };
 
 onMounted(() => {
-  loadTableData();
-  loadAppList();
+  
+
 });
-const loadAppList = () => {
-  appList().then((res) => {
-    
-    appDataList.value = res.data;
-  });
+const init = (formId) => {
+  queryParam.formId = formId;
+  loadTableData();
 };
 
 // 搜索
@@ -206,13 +185,13 @@ const search = (first = true) => {
 const reset = () => {
   queryParam.name = "";
   queryParam.code = "";
-  queryParam.appId = "";
+  queryParam.dataType = "";
   search();
 };
 const loadTableData = async () => {
   try {
     loading.value = true;
-    const { data, page } = await queryForm(tablePagination, queryParam);
+    const { data, page } = await queryFormProperty(tablePagination, queryParam);
     tableData.value = data;
     tablePagination.totalCount = page.totalCount;
   } catch (err) {
@@ -223,29 +202,32 @@ const loadTableData = async () => {
   }
 };
 
-// form add
-const formAddRef = ref();
-const formAddVisible = ref(false);
+// form property add
+const formPropertyAddRef = ref();
+const formPropertyAddVisible = ref(false);
 const handleAdd = () => {
-  formAddVisible.value = true;
+  formPropertyAddVisible.value = true;
+  nextTick(() => {
+    formPropertyAddRef.value.init(queryParam.formId);
+  });
 };
-const handleFormAddOk = async () => {
+const handleFormPropertyAddOk = async () => {
   
-  const result = await formAddRef.value.handleSubmit();
+  const result = await formPropertyAddRef.value.handleSubmit();
   if (result) {
-    formAddVisible.value = false;
+    formPropertyAddVisible.value = false;
   }
 
 };
 
-const handleformAddCancel = () => {
-  formAddVisible.value = false;
+const handleFormPropertyAddCancel = () => {
+  formPropertyAddVisible.value = false;
 };
-// form delete
+// form property delete
 const handleDelete = async (record)=> {
   try {
     loading.value = true;
-    const { success, message } = await deleteForm(record.id);
+    const { success, message } = await deleteFormProperty(record.id);
     if (success) {
       Message.success("删除成功");
       search(false);
@@ -258,53 +240,32 @@ const handleDelete = async (record)=> {
   }
 }
 
-// form edit
-const formEditRef = ref();
-const formEditVisible = ref(false);
+// form property edit
+const formPropertyEditRef = ref();
+const formPropertyEditVisible = ref(false);
 const editData = (record) => {
-  formEditVisible.value = true;
+  formPropertyEditVisible.value = true;
   nextTick(() => {
-    formEditRef.value.initdata(record);
+    formPropertyEditRef.value.init(record);
   });
   
 };
-const handleFormEditOk = async () => {
-  const res = await formEditRef.value.handleSubmit();
+const handleFormPropertyEditOk = async () => {
+  const res = await formPropertyEditRef.value.handleSubmit();
   if(res){
-      formEditVisible.value = false;
+      formPropertyEditVisible.value = false;
     }
   
 };
 
-const handleFormEditCancel = () => {
-  formEditVisible.value = false;
+const handleFormPropertyEditCancel = () => {
+  formPropertyEditVisible.value = false;
 };
 
-// 表单属性
-const formPropertyRef = ref();
-const formPropertyVisible = ref(false);
-const editProperty = (record) => {
-  formPropertyVisible.value = true;
-  nextTick(() => {
-    formPropertyRef.value.init(record.id);
-  });
-};
-const handleFormPropertyOk =  () => {
-  formPropertyVisible.value = false;
-};
+defineExpose({
+  init
+});
 
-// 表单页面
-const formPageRef = ref();
-const formPageVisible = ref(false);
-const editPage = (record) => {
-  formPageVisible.value = true;
-  nextTick(() => {
-    formPageRef.value.init(record.id);
-  });
-};
-const handleFormPageOk =  () => {
-  formPageVisible.value = false;
-};
 </script>
 
 <style scoped lang="less">
