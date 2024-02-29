@@ -11,8 +11,8 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="appId" label="应用id">
-                  <a-input v-model="queryParam.appId" placeholder="请输入应用id" allow-clear />
+                <a-form-item field="appId" label="应用标识">
+                  <a-input v-model="queryParam.appId" placeholder="请输入应用标识" allow-clear />
                 </a-form-item>
               </a-col>
 
@@ -58,11 +58,11 @@
           :bordered="false"
       >
         <template #columns>
-          <a-table-column title="序号" data-index="index" width="80"></a-table-column>
-          <a-table-column title="应用名称" data-index="appName"></a-table-column>
-          <a-table-column title="应用id" data-index="appId"></a-table-column>
-          <a-table-column title="PC地址" data-index="pcHost"></a-table-column>
-          <a-table-column title="移动地址" data-index="mobileHost"></a-table-column>
+          <a-table-column title="序号" data-index="index" align="center" width="80"></a-table-column>
+          <a-table-column title="应用名称" data-index="appName" align="center" width="200"></a-table-column>
+          <a-table-column title="应用标识" data-index="appId" align="center" width="200"></a-table-column>
+          <a-table-column title="PC地址" data-index="pcHost" align="center"></a-table-column>
+          <a-table-column title="移动地址" data-index="mobileHost" align="center"></a-table-column>
           <a-table-column title="操作" align="center" width="160">
             <template #cell="{ record }">
               <a-space>
@@ -88,8 +88,9 @@
       </div>
     </a-card>
     <!-- 新增弹窗 -->
-    <a-modal v-model:visible="appAddVisible">
+    <a-modal v-model:visible="appAddVisible" title-align="start" draggable>
       <template #title>
+        <icon-plus />
         新增应用
       </template>
       <app-add v-if="appAddVisible" ref="appAddRef"  @success="search(false)"></app-add>
@@ -133,7 +134,7 @@ const queryParam = reactive({
 const tableData = ref([]);
 const tablePagination = reactive({
   pageNo: 1,
-  pageSize: 5,
+  pageSize: 10,
   totalCount: 0,
 });
 const handleTablePageChange = (pageNo) => {
