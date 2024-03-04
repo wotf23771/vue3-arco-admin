@@ -27,7 +27,7 @@
           </a-form-item>
         </a-col>
         <a-col span="22">
-          <a-form-item field="value1" label="配置类型" label-col-flex="80px">
+          <a-form-item field="type" label="配置类型" label-col-flex="80px">
             <a-radio-group type="button" v-model="form.type" disabled>
               <a-radio value="VALUE">固定配置</a-radio>
               <a-radio value="LIST">列表配置</a-radio>

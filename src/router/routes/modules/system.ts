@@ -9,7 +9,7 @@ const FORM: AppRouteRecordRaw = {
     locale: "系统管理",
     icon: "icon-settings",
     requiresAuth: true,
-    order: 3
+    order: 3,
   },
   children: [
     {
@@ -19,8 +19,8 @@ const FORM: AppRouteRecordRaw = {
       meta: {
         locale: "数据字典",
         icon: "icon-list",
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: "config",
@@ -29,10 +29,20 @@ const FORM: AppRouteRecordRaw = {
       meta: {
         locale: "参数配置",
         icon: "icon-list",
-        requiresAuth: true
-      }
-    }
-  ]
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "user",
+      name: "user",
+      component: () => import("@/views/user/index.vue"),
+      meta: {
+        locale: "用户管理",
+        icon: "icon-list",
+        requiresAuth: true,
+      },
+    },
+  ],
 };
 
 export default FORM;
