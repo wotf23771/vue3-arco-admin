@@ -1,8 +1,7 @@
 "use strict";
-import { NODE, WIDGET, ASSIGNEE } from "@/components/flow/common/FlowConstant";
+import { ASSIGNEE, NODE, WIDGET } from "@/components/flow/common/FlowConstant";
 import { isArray, isNull, isNumber, isObject, isString, isUndefined } from "@/utils/is";
-import { flow } from "lodash";
-import array from "lodash/array";
+import array from "lodash-es/array";
 import validator from "validator";
 
 // 流程结构示例
@@ -38,7 +37,7 @@ const example = {
               conditions: [{ id: "635296659764416513", val: ["1000", "1001"], varName: "initiator", operator: 20, operators: [20, 21] }],
             },
           ],
-          conditionExpression: '${(fo.belong(businessKey,initiator,"1000","1001"))}',
+          conditionExpression: "${(fo.belong(businessKey,initiator,\"1000\",\"1001\"))}",
         },
         {
           name: "条件2",

@@ -159,7 +159,7 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="less" scoped>
-@import "@/styles/variables.module.less";
+@import "@/components/flow/style/variables.module.less";
 
 @header-height: 70px;
 @canvas-bg: @MainContentBg;

@@ -10,7 +10,7 @@
         @click="goto(itemData)"
     >
       <span class="tag-link">
-        {{ $t(itemData.title) }}
+        {{ itemData.title }}
       </span>
       <span
           class="arco-icon-hover arco-tag-icon-hover arco-icon-hover-size-medium arco-tag-close-btn"
@@ -57,8 +57,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { computed, PropType } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useTabBarStore } from "@/store";
 import type { TagProps } from "@/store/modules/tab-bar/types";
 import { DEFAULT_ROUTE_NAME, REDIRECT_ROUTE_NAME } from "@/router/constants";

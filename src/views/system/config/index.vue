@@ -151,7 +151,7 @@
       </template>
     </a-modal>
     <!--修改参数 end-->
-    
+
     <!--配置 全局-固定 -->
     <default-value ref="defaultValueRef"></default-value>
   </div>
@@ -220,7 +220,7 @@ const loadTableData = async () => {
   }
 };
 
-// config add
+// build add
 const configAddRef = ref();
 const configAddVisible = ref(false);
 const handleAdd = () => {
@@ -233,7 +233,7 @@ const handleConfigAddOk = async () => {
   }
 };
 
-// config update
+// build update
 const configEditRef = ref();
 const configEditVisible = ref(false);
 // 点击修改
@@ -250,7 +250,7 @@ const handleConfigEditOk = async () => {
   }
 };
 
-// config delete
+// build delete
 const handleDelete = async (record) => {
   try {
     loading.value = true;
@@ -267,7 +267,7 @@ const handleDelete = async (record) => {
   }
 };
 
-// config value
+// build value
 const defaultValueRef = ref();
 const handleConfigValue = (record) => {
   const scopeType = record.scopeType;

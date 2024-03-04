@@ -11,11 +11,11 @@
     >
       <a-form-item
           field="username"
-          :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
+          :rules="[{ required: true, message: '用户名为空' }]"
           :validate-trigger="['change', 'blur']"
           hide-label
       >
-        <a-input v-model="userInfo.username" :placeholder="$t('login.form.userName.placeholder')">
+        <a-input v-model="userInfo.username" placeholder="请输入用户名">
           <template #prefix>
             <icon-user />
           </template>
@@ -23,13 +23,13 @@
       </a-form-item>
       <a-form-item
           field="password"
-          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :rules="[{ required: true, message: '密码为空'}]"
           :validate-trigger="['change', 'blur']"
           hide-label
       >
         <a-input-password
             v-model="userInfo.password"
-            :placeholder="$t('login.form.password.placeholder')"
+            placeholder="请输入密码"
             allow-clear
         >
           <template #prefix>
@@ -43,14 +43,11 @@
               checked="rememberPassword"
               :model-value="loginConfig.rememberPassword"
               @change="setRememberPassword as any"
-          >
-            {{ $t("login.form.rememberPassword") }}
+          >记住密码
           </a-checkbox>
-          <a-link>{{ $t("login.form.forgetPassword") }}</a-link>
+          <a-link>忘记密码</a-link>
         </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">
-          {{ $t("login.form.login") }}
-        </a-button>
+        <a-button type="primary" html-type="submit" long :loading="loading">登录</a-button>
       </a-space>
     </a-form>
   </div>
@@ -61,19 +58,17 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import { ValidatedError } from "@arco-design/web-vue/es/form/interface";
-import { useI18n } from "vue-i18n";
 import { useStorage } from "@vueuse/core";
 import { useUserStore } from "@/store";
 import useLoading from "@/hooks/loading";
 import type { LoginData } from "@/api/user";
 
 const router = useRouter();
-const { t } = useI18n();
 const errorMessage = ref("");
 const { loading, setLoading } = useLoading();
 const userStore = useUserStore();
 
-const loginConfig = useStorage("login-config", {
+const loginConfig = useStorage("login-build", {
   rememberPassword: true,
   username: "admin", // 演示默认值
   password: "admin", // demo default value
@@ -99,7 +94,7 @@ const handleSubmit = async ({ errors, values }: {
           ...othersQuery,
         },
       });
-      Message.success(t("login.form.login.success"));
+      Message.success("登录成功");
       const { rememberPassword } = loginConfig.value;
       const { username, password } = values;
       // 实际生产环境需要进行加密存储。

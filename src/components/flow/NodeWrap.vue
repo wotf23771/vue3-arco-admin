@@ -138,6 +138,7 @@ import { computed, getCurrentInstance, onMounted, reactive, ref, watch } from "v
 import ArrayUtil from "./common/ArrayUtil";
 import { NODE } from "./common/FlowConstant";
 import { showExpNodeContent } from "./common/FormExp";
+import AddNode from "@/components/flow/AddNode.vue";
 
 let _uid = getCurrentInstance().uid;
 

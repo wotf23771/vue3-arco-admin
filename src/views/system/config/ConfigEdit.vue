@@ -56,7 +56,7 @@ import { Message } from "@arco-design/web-vue";
 const formRef = ref();
 const loading = ref(false);
 onMounted(() => {
-  console.log("config add mounted");
+  console.log("build add mounted");
 });
 const emits = defineEmits(["success"]);
 const formId = ref("");

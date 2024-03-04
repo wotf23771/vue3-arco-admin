@@ -9,7 +9,7 @@ const errorHandler = (error: AxiosError) => {
     if (error.response.status === 404) {
       // notification.error({
       //   message: "请求的资源不存在",
-      //   description: error.config.url
+      //   description: error.build.url
       // });
       return Promise.reject(error);
     } else if (error.response.status === 403) {
@@ -41,7 +41,7 @@ const request = axios.create({
   withCredentials: true,
   validateStatus(status) {
     return status >= 200 && status < 300;
-  }
+  },
 });
 request.interceptors.request.use(config => {
     // 是否需要设置 token
@@ -54,7 +54,7 @@ request.interceptors.request.use(config => {
   },
   (error: AxiosError) => {
     return errorHandler(error);
-  }
+  },
 );
 // add response interceptors
 request.interceptors.response.use((response) => {
@@ -66,7 +66,7 @@ request.interceptors.response.use((response) => {
   },
   (error: AxiosError) => {
     return errorHandler(error);
-  }
+  },
 );
 
 export default request;

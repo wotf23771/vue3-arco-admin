@@ -27,8 +27,8 @@
         <a-tooltip
             :content="
             isFullscreen
-              ? $t('settings.navbar.screen.toExit')
-              : $t('settings.navbar.screen.toFull')
+              ? '退出全屏'
+              : '全屏'
           "
         >
           <a-button
@@ -53,7 +53,7 @@
             >
               <icon-user />
             </a-avatar>
-            <span style="user-select: none;">管理员</span>
+            <span style="user-select: none;">{{ userName }}</span>
           </div>
           <template #content>
             <a-doption>
@@ -65,9 +65,7 @@
             <a-doption>
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings />
-                <span>
-                  {{ $t("messageBox.userSettings") }}
-                </span>
+                <span>用户设置</span>
               </a-space>
             </a-doption>
             <a-doption>
@@ -100,6 +98,9 @@ const avatar = computed(() => {
   return userStore.avatar;
 });
 const appTitle = appStore.appTitle;
+const userName = computed(() => {
+  return userStore.name;
+});
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
   selector: "body",

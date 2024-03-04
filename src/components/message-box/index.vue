@@ -6,7 +6,7 @@
           <span> {{ item.title }}{{ formatUnreadLength(item.key) }} </span>
         </template>
         <a-result v-if="!renderList.length" status="404">
-          <template #subtitle> {{ $t("messageBox.noContent") }}</template>
+          <template #subtitle> {{ "messageBox.noContent" }}</template>
         </a-result>
         <List
             :render-list="renderList"
@@ -16,7 +16,7 @@
       </a-tab-pane>
       <template #extra>
         <a-button type="text" @click="emptyList">
-          {{ $t("messageBox.tab.button") }}
+          {{ "messageBox.tab.button" }}
         </a-button>
       </template>
     </a-tabs>
@@ -24,14 +24,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, toRefs, computed } from "vue";
-import { useI18n } from "vue-i18n";
-import {
-  queryMessageList,
-  setMessageStatus,
-  MessageRecord,
-  MessageListType,
-} from "@/api/message";
+import { computed, reactive, ref, toRefs } from "vue";
+import { MessageListType, MessageRecord, queryMessageList, setMessageStatus } from "@/api/message";
 import useLoading from "@/hooks/loading";
 import List from "./list.vue";
 
@@ -43,7 +37,6 @@ interface TabItem {
 
 const { loading, setLoading } = useLoading(true);
 const messageType = ref("message");
-const { t } = useI18n();
 const messageData = reactive<{
   renderList: MessageRecord[];
   messageList: MessageRecord[];
@@ -55,15 +48,15 @@ toRefs(messageData);
 const tabList: TabItem[] = [
   {
     key: "message",
-    title: t("messageBox.tab.title.message"),
+    title: "messageBox.tab.title.message",
   },
   {
     key: "notice",
-    title: t("messageBox.tab.title.notice"),
+    title: "messageBox.tab.title.notice",
   },
   {
     key: "todo",
-    title: t("messageBox.tab.title.todo"),
+    title: "messageBox.tab.title.todo",
   },
 ];
 

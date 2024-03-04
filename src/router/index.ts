@@ -13,23 +13,28 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "login"
+      redirect: "/dashboard/workplace",
     },
+    // {
+    //   path: "/login",
+    //   name: "login",
+    //   component: () => import("@/views/login/index.vue"),
+    //   meta: {
+    //     requiresAuth: false,
+    //   },
+    // },
     {
-      path: "/login",
+      path: "/oauth2-login",
       name: "login",
-      component: () => import("@/views/login/index.vue"),
-      meta: {
-        requiresAuth: false
-      }
+      component: () => import("@/views/login.vue"),
     },
     ...appRoutes,
     REDIRECT_MAIN,
-    NOT_FOUND_ROUTE
+    NOT_FOUND_ROUTE,
   ],
   scrollBehavior() {
     return { top: 0 };
-  }
+  },
 });
 
 createRouteGuard(router);
