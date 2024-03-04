@@ -74,10 +74,10 @@ const handleSubmit = async ()=>{
     loading.value = true;
     const { code, success, message } = await updateFormProperty(id.value,form);
     if (!success) {
-      Message.error(message || "保存失败");
+      Message.error(message || "更新失败");
       return false;
     }
-    Message.success("保存成功");
+    Message.success("更新成功");
     emits("success");
     return true;
   } catch (err) {

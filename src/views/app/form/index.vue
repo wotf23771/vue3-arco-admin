@@ -71,7 +71,7 @@
           <a-table-column title="表单编码" data-index="code" align="center" width="200"></a-table-column>
           <a-table-column title="表单名称" data-index="name" align="center" ></a-table-column>
           <a-table-column title="排序" data-index="sn" align="right" width="80"></a-table-column>
-          <a-table-column title="操作" align="center" width="300">
+          <a-table-column title="操作" align="center" width="350">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="editData(record)" >修改</a-link>
@@ -81,6 +81,7 @@
                 </a-popconfirm>
                 <a-link :hoverable="false" @click="editProperty(record)" >配置属性</a-link>
                 <a-link :hoverable="false" @click="editPage(record)" >配置页面</a-link>
+                <a-link :hoverable="false" @click="editUserRule(record)" >配置参与规则</a-link>
               </a-space>
             </template>
           </a-table-column>
@@ -136,7 +137,7 @@
     </template>
    <form-property v-if="formPropertyVisible" ref="formPropertyRef" ></form-property>
   </a-drawer>
-  <!-- 配置页面抽屉 -->
+  <!-- 表单页面抽屉 -->
   <a-drawer
     :width="1500"
     :hide-cancel="true"
@@ -147,6 +148,18 @@
       <span>表单页面</span>
     </template>
    <form-page v-if="formPageVisible" ref="formPageRef" ></form-page>
+  </a-drawer>
+  <!-- 表单参与者规则抽屉 -->
+    <a-drawer
+    :width="1500"
+    :hide-cancel="true"
+    :visible="formUserRuleVisible"   
+    @ok="handleFormUserRuleOk"
+  >
+    <template #header>
+      <span>表单页面</span>
+    </template>
+   <form-user-rule v-if="formUserRuleVisible" ref="formUserRuleRef" ></form-user-rule>
   </a-drawer>
   </div>
 </template>
@@ -159,7 +172,8 @@ import { queryForm,deleteForm } from "@/api/app/form";
 import FormAdd from "./FormAdd.vue";
 import FormEdit from "./FormEdit.vue";
 import FormProperty from "./FormProperty.vue";
-import  FormPage  from "./FormPage.vue";
+import FormPage  from "./FormPage.vue";
+import FormUserRule  from "./FormUserRule.vue";
 import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
@@ -305,6 +319,20 @@ const editPage = (record) => {
 const handleFormPageOk =  () => {
   formPageVisible.value = false;
 };
+
+// 表单参与者规则
+const formUserRuleRef = ref();
+const formUserRuleVisible = ref(false);
+const editUserRule = (record) => {
+  formUserRuleVisible.value = true;
+  nextTick(() => {
+    formUserRuleRef.value.init(record.id);
+  });
+};
+const handleFormUserRuleOk =  () => {
+  formUserRuleVisible.value = false;
+};
+
 </script>
 
 <style scoped lang="less">

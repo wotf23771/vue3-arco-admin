@@ -6,16 +6,10 @@
           <a-form :model="queryParam" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" label-align="right">
             <a-row>
               <a-col :span="6">
-                <a-form-item field="appName" label="应用名称">
-                  <a-input v-model="queryParam.appName" placeholder="请输入应用名称" allow-clear />
+                <a-form-item field="name" label="规则名称">
+                  <a-input v-model="queryParam.name" placeholder="请输入规则名称" allow-clear />
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
-                <a-form-item field="appId" label="应用标识">
-                  <a-input v-model="queryParam.appId" placeholder="请输入应用标识" allow-clear />
-                </a-form-item>
-              </a-col>
-
             </a-row>
           </a-form>
         </a-col>
@@ -44,7 +38,7 @@
               <template #icon>
                 <icon-plus />
               </template>
-              新增应用
+              新增规则
             </a-button>
           </a-space>
         </a-col>
@@ -59,18 +53,20 @@
       >
         <template #columns>
           <a-table-column title="序号" data-index="index" align="center" width="80"></a-table-column>
-          <a-table-column title="应用名称" data-index="appName" align="center" width="200"></a-table-column>
-          <a-table-column title="应用标识" data-index="appId" align="center" width="200"></a-table-column>
-          <a-table-column title="PC端地址" data-index="pcHost" align="center"></a-table-column>
-          <a-table-column title="移动端地址" data-index="mobileHost" align="center"></a-table-column>
+          <a-table-column title="表单名称" data-index="formName" align="center" width="150"></a-table-column>
+          <a-table-column title="规则名称" data-index="name" align="center" width="150" ></a-table-column>
+          <a-table-column title="候选人规则bean" data-index="userRuleBean" align="center" width="150"></a-table-column>
+          <a-table-column title="候选人规则名称" data-index="userRuleName" align="center" width="150"></a-table-column>
+          <a-table-column title="候选人规则参数" data-index="userRuleParams" align="center" ></a-table-column>
+          <a-table-column title="排序" data-index="sn" align="right" width="80"></a-table-column>
           <a-table-column title="操作" align="center" width="160">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="editData(record)" >修改</a-link>
+               
                 <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
                   <a-link :hoverable="false" status="danger">删除</a-link>
                 </a-popconfirm>
-              
               </a-space>
             </template>
           </a-table-column>
@@ -88,28 +84,28 @@
       </div>
     </a-card>
     <!-- 新增弹窗 -->
-    <a-modal v-model:visible="appAddVisible" title-align="start" draggable>
+    <a-modal v-model:visible="formPageAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
-        新增应用
+        新增规则
       </template>
-      <app-add v-if="appAddVisible" ref="appAddRef"  @success="search(false)"></app-add>
+      <form-user-rule-add v-if="formPageAddVisible" ref="formPageAddRef" @success="search(false)"></form-user-rule-add>
       <template #footer>
-        <a-button @click="handleAppAddCancel">取消</a-button>
-        <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
+        <a-button @click="handleFormPageAddCancel">取消</a-button>
+        <a-popconfirm content="确定要保存？" @ok="handleFormPageAddOk">
           <a-button type="primary">保存</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
     <!-- 编辑弹窗 -->
-    <a-modal v-model:visible="appEditVisible" title-align="start" draggable>
+    <a-modal v-model:visible="formPageEditVisible">
       <template #title>
-          编辑应用
+          编辑规则
       </template>
-      <app-edit v-if="appEditVisible"  ref="appEditRef"  @success="search(false)" ></app-edit>
+      <form-user-rule-edit v-if="formPageEditVisible"  ref="formPageEditRef"  @success="search(false)"></form-user-rule-edit>
       <template #footer>
-        <a-button @click="handleAppEditCancel">取消</a-button>
-        <a-popconfirm content="确定要更新？" @ok="handleAppEditOk">
+        <a-button @click="handleFormPageEditCancel">取消</a-button>
+        <a-popconfirm content="确定要更新？" @ok="handleFormPageEditOk">
           <a-button type="primary">更新</a-button>
         </a-popconfirm>
       </template>
@@ -120,17 +116,19 @@
 
 <script setup>
 
-import { nextTick,onMounted, reactive, ref } from "vue";
-import { queryApp,deleteApp } from "@/api/app/app";
-import AppAdd from "./AppAdd.vue";
-import AppEdit from "./AppEdit.vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
+import { queryFormUserRule, deleteFormUserRule } from "@/api/app/form";
+import FormUserRuleAdd from "./FormUserRuleAdd.vue";
+import FormUserRuleEdit from "./FormUserRuleEdit.vue";
 import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
 const queryParam = reactive({
-  appName: "",
-  appId: "",
+  formId:'',// 表单id
+  name: "",
+  
 });
+
 const tableData = ref([]);
 const tablePagination = reactive({
   pageNo: 1,
@@ -147,8 +145,13 @@ const handleTablePageSizeChange = (pageSize) => {
 };
 
 onMounted(() => {
-  loadTableData();
+  
+
 });
+const init = (formId) => {
+  queryParam.formId = formId;
+  loadTableData();
+};
 
 // 搜索
 const search = (first = true) => {
@@ -159,14 +162,13 @@ const search = (first = true) => {
 };
 
 const reset = () => {
-  queryParam.appName = "";
-  queryParam.appId = "";
+  queryParam.name = "";
   search();
 };
 const loadTableData = async () => {
   try {
     loading.value = true;
-    const { data, page } = await queryApp(tablePagination, queryParam);
+    const { data, page } = await queryFormUserRule(tablePagination, queryParam);
     tableData.value = data;
     tablePagination.totalCount = page.totalCount;
   } catch (err) {
@@ -177,28 +179,32 @@ const loadTableData = async () => {
   }
 };
 
-// app add
-const appAddRef = ref();
-const appAddVisible = ref(false);
+// form user rule add
+const formPageAddRef = ref();
+const formPageAddVisible = ref(false);
 const handleAdd = () => {
-  appAddVisible.value = true;
+  formPageAddVisible.value = true;
+  nextTick(() => {
+    formPageAddRef.value.init(queryParam.formId);
+  });
 };
-const handleAppAddOk = async () => {
-  const result = await appAddRef.value.handleSubmit();
+const handleFormPageAddOk = async () => {
+  
+  const result = await formPageAddRef.value.handleSubmit();
   if (result) {
-    appAddVisible.value = false;
+    formPageAddVisible.value = false;
   }
- 
+
 };
 
-const handleAppAddCancel = () => {
-  appAddVisible.value = false;
+const handleFormPageAddCancel = () => {
+  formPageAddVisible.value = false;
 };
-// app delete
+// form page delete
 const handleDelete = async (record)=> {
   try {
     loading.value = true;
-    const { success, message } = await deleteApp(record.id);
+    const { success, message } = await deleteFormUserRule(record.id);
     if (success) {
       Message.success("删除成功");
       search(false);
@@ -209,31 +215,33 @@ const handleDelete = async (record)=> {
   } catch (err) {
     loading.value = false;
   }
-
 }
 
-// app edit
-const appEditRef = ref();
-const appEditVisible = ref(false);
+// form property edit
+const formPageEditRef = ref();
+const formPageEditVisible = ref(false);
 const editData = (record) => {
-  appEditVisible.value = true;
+  formPageEditVisible.value = true;
   nextTick(() => {
-    appEditRef.value.initdata(record);
+    formPageEditRef.value.init(record);
   });
   
 };
-const handleAppEditOk = async () => {
- 
-    const result = await appEditRef.value.handleSubmit();
-  if (result) {
-    appEditVisible.value = false;
-    loadTableData();
-  }
+const handleFormPageEditOk = async () => {
+  const res = await formPageEditRef.value.handleSubmit();
+  if(res){
+      formPageEditVisible.value = false;
+    }
+  
 };
 
-const handleAppEditCancel = () => {
-  appEditVisible.value = false;
+const handleFormPageEditCancel = () => {
+  formPageEditVisible.value = false;
 };
+
+defineExpose({
+  init
+});
 
 </script>
 

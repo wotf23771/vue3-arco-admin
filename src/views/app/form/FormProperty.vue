@@ -107,7 +107,7 @@
     <a-modal v-model:visible="formPropertyAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
-        新增表单
+        新增属性
       </template>
       <form-property-add v-if="formPropertyAddVisible" ref="formPropertyAddRef" @success="search(false)"></form-property-add>
       <template #footer>
@@ -120,7 +120,7 @@
     <!-- 编辑弹窗 -->
     <a-modal v-model:visible="formPropertyEditVisible">
       <template #title>
-          编辑表单
+          编辑属性
       </template>
       <form-property-edit v-if="formPropertyEditVisible"  ref="formPropertyEditRef"  @success="search(false)"></form-property-edit>
       <template #footer>

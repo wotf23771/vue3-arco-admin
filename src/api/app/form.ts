@@ -27,6 +27,14 @@ export function queryForm(parameter: PageParam, query: FormQuery) {
   });
 }
 
+export function listForm(appId :string) {
+  return request({
+    url: "/form/listForm",
+    method: "get",
+    params: { appId },
+  });
+}
+
 export function saveForm( form: FormForm) {
   return request({
     url: "/form/saveForm",
@@ -188,6 +196,83 @@ return request({
 export function deleteFormPage(id :string) {
 return request({
   url: "/form/deleteFormPage",
+  method: "post",
+  params: { id },
+});
+}
+
+// 表单参与者规则
+
+export interface FormUserRuleQuery {
+  formId?: string; // 表单id
+  name?: string; //名称
+  userRuleBean?: string;
+}
+
+export interface FormUserRuleForm {
+  formId?: string; //表单id
+  formName?: string; //表单名称
+  name?: string;  //表单参与者规则名称
+  userRuleBean?: string; //候选人规则Bean名称
+  userRuleName?: string;  //候选人规则名称
+  userRuleParams?: string; //候选人规则参数
+  sn?: number;  //表单序列号
+  version?: number;  //版本号
+}
+
+export function listRule() {
+  return request({
+    url: "/auditUserRule/listRule",
+    method: "get",
+  });
+  }
+
+export function queryFormUserRule(parameter: PageParam, query: FormUserRuleQuery) {
+return request({
+  url: "/form/queryFormUserRule",
+  method: "post",
+  params: parameter,
+  data: query
+});
+}
+export function listFormUserRuleByFormId(formId :string) {
+  return request({
+    url: "/form/listFormUserRuleByFormId",
+    method: "get",
+    params: { formId },
+  });
+  }
+
+export function saveFormUserRule( form: FormUserRuleForm) {
+return request({
+  url: "/form/saveFormUserRule",
+  method: "post",
+  data: form
+});
+}
+
+
+
+export function getFormUserRule(id :string) {
+return request({
+  url: "/form/getFormUserRule",
+  method: "get",
+  params: { id },
+});
+}
+
+export function updateFormUserRule(id:string, form : FormUserRuleForm) {
+return request({
+  url: "/form/updateFormUserRule",
+  method: "post",
+  params: { id },
+  data: form,
+});
+}
+
+export function deleteFormUserRule(id :string) {
+return request({
+  url: "/form/deleteFormUserRule",
   method: "post",
   params: { id },
 });

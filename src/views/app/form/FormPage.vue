@@ -84,7 +84,7 @@
     <a-modal v-model:visible="formPageAddVisible" title-align="start" draggable>
       <template #title>
         <icon-plus />
-        新增表单
+        新增页面
       </template>
       <form-page-add v-if="formPageAddVisible" ref="formPageAddRef" @success="search(false)"></form-page-add>
       <template #footer>
@@ -97,7 +97,7 @@
     <!-- 编辑弹窗 -->
     <a-modal v-model:visible="formPageEditVisible">
       <template #title>
-          编辑表单
+          编辑页面
       </template>
       <form-page-edit v-if="formPageEditVisible"  ref="formPageEditRef"  @success="search(false)"></form-page-edit>
       <template #footer>

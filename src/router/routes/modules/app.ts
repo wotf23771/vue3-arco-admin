@@ -37,7 +37,7 @@ const FORM: AppRouteRecordRaw = {
     {
       path: "hookLog",
       name: "hookLog",
-      component: () => import("@/views/app/form/index.vue"),
+      component: () => import("@/views/app/hooklog/index.vue"),
       meta: {
         locale: "回调日志",
         icon: "icon-history",

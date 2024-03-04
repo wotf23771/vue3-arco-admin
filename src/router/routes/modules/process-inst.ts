@@ -21,6 +21,26 @@ const FORM: AppRouteRecordRaw = {
         icon: "icon-list",
         requiresAuth: true
       }
+    },
+    {
+      path: "todo",
+      name: "todo",
+      component: () => import("@/views/inst/todo/index.vue"),
+      meta: {
+        locale: "待办待阅",
+        icon: "icon-layers",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "log",
+      name: "log",
+      component: () => import("@/views/inst/log/index.vue"),
+      meta: {
+        locale: "记录",
+        icon: "icon-mind-mapping",
+        requiresAuth: true
+      }
     }
   ]
 };
