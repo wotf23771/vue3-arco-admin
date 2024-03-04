@@ -1,9 +1,13 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { getToken } from "@/utils/auth";
+import { Modal } from "@arco-design/web-vue";
+import { getOAuth2AuthorizeUrl } from "@/api/user";
 
-const errorHandler = (error: AxiosError) => {
+const errorHandler = (error) => {
+  console.log("error", error);
   if (error.response) {
-    const data = error.response.data;
+    const { code, message } = error.response.data;
+
     // 从 localstorage 获取 token
     // const token = storage.get(ACCESS_TOKEN)
     if (error.response.status === 404) {
@@ -19,6 +23,20 @@ const errorHandler = (error: AxiosError) => {
       // });
       return Promise.reject(error);
     } else if (error.response.status === 401) {
+      if (code == 40101) {
+        Modal.open({
+          title: "登录失败",
+          closable: false,
+          content: message,
+          hideCancel: true,
+          okText: "重新登录",
+          onOk: () => {
+            getOAuth2AuthorizeUrl(import.meta.env.VITE_APP_OAUTH2_REDIRECT_URI).then(res => {
+              location.replace(res.data);
+            });
+          },
+        });
+      }
       // Modal.warning({
       //   content: data.message,
       //   okText: "确定",
@@ -52,7 +70,7 @@ request.interceptors.request.use(config => {
     }
     return config;
   },
-  (error: AxiosError) => {
+  (error) => {
     return errorHandler(error);
   },
 );
@@ -64,7 +82,7 @@ request.interceptors.response.use((response) => {
       return response.data;
     }
   },
-  (error: AxiosError) => {
+  (error) => {
     return errorHandler(error);
   },
 );

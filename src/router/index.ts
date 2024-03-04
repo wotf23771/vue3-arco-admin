@@ -28,6 +28,11 @@ const router = createRouter({
       name: "login",
       component: () => import("@/views/login.vue"),
     },
+    {
+      path: "/401",
+      name: "401",
+      component: () => import("@/views/exception/401/index.vue"),
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,

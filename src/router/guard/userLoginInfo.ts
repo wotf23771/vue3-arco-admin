@@ -4,7 +4,7 @@ import { useUserStore } from "@/store";
 import { isLogin } from "@/utils/auth";
 import { getOAuth2AuthorizeUrl } from "@/api/user";
 
-const allowList = ["login", "500", "403", "loginDeny", "logout"]; // no redirect allowList
+const allowList = ["login", "500", "403", "401", "loginDeny", "logout"]; // no redirect allowList
 const loginRoutePath = "/oauth2-login";
 const defaultRoutePath = "/";
 export default function setupUserLoginInfoGuard(router: Router) {
