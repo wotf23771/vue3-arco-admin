@@ -10,7 +10,6 @@ import App from "./App.vue";
 // 样式通过 arco-plugin 插件导入。详见目录文件 build/plugin/arcoStyleImport.ts
 // https://arco.design/docs/designlab/use-theme-package
 import "@/assets/style/global.less";
-import "@/api/interceptor";
 // 拖拽滚动组件
 import Vue3Dragscroll from "vue3-dragscroll";
 
