@@ -25,7 +25,7 @@ const FORM: AppRouteRecordRaw = {
     {
       path: "flowmanedit",
       name: "flowmanedit",
-      component: () => import("@/views/def/config/flow-edit.vue"),
+      component: () => import("@/views/def/config/FlowDesign.vue"),
       meta: {
         locale: "流程配置",
         icon: "icon-share-alt",

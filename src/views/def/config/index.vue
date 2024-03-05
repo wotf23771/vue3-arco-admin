@@ -7,9 +7,9 @@
             <a-row>
               <a-col :span="6">
                 <a-form-item field="appId" label="所属应用">
-                  <a-select  v-model="queryParam.appId" placeholder="请选择" allow-clear>
+                  <a-select v-model="queryParam.appId" placeholder="请选择" allow-clear>
                     <a-option :key="item.appId" v-for="item of appDataList" :value="item.appId" :label="item.appName"></a-option>
-                    
+
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -70,18 +70,18 @@
           <a-table-column title="所属应用" data-index="appName" align="center" width="200"></a-table-column>
           <a-table-column title="流程定义名称" data-index="name" align="center" width="200"></a-table-column>
           <a-table-column title="流程定义key" data-index="procDefKey" align="center" width="200"></a-table-column>
-          <a-table-column title="关联表单" data-index="formName" align="center" ></a-table-column>
+          <a-table-column title="关联表单" data-index="formName" align="center"></a-table-column>
           <a-table-column title="激活版本" data-index="activeActDefVersion" align="center" width="200"></a-table-column>
           <a-table-column title="操作" align="center" width="300">
             <template #cell="{ record }">
               <a-space>
-                <a-link :hoverable="false" @click="editData(record)" >设计</a-link>
-                <a-link :hoverable="false"  >版本</a-link>
+                <a-link :hoverable="false" @click="handleDesign(record)">设计</a-link>
+                <a-link :hoverable="false">版本</a-link>
                 <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
                   <a-link :hoverable="false" status="danger">删除</a-link>
                 </a-popconfirm>
                 <!-- <a-link :hoverable="false" @click="editData(record)" >关联表单</a-link> -->
-                <a-link :hoverable="false" @click="editDefOrg(record)" >适用组织</a-link>
+                <a-link :hoverable="false" @click="editDefOrg(record)">适用组织</a-link>
               </a-space>
             </template>
           </a-table-column>
@@ -98,67 +98,66 @@
         />
       </div>
     </a-card>
-      <!-- 新增弹窗 -->
-      <a-modal v-model:visible="appAddVisible" title-align="start" draggable>
-        <template #title>
-          <icon-plus />
-          新增流程定义
-        </template>
-        <def-add v-if="appAddVisible" ref="appAddRef"  @success="search(false)"></def-add>
-        <template #footer>
-          <a-button @click="handleAppAddCancel">取消</a-button>
-          <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
-            <a-button type="primary">保存</a-button>
-          </a-popconfirm>
-        </template>
-      </a-modal>
-      <!-- 编辑弹窗 -->
-      <a-modal v-model:visible="defEditVisible" title-align="start" fullscreen>
-        <template #title>
-          <icon-edit />
-          编辑流程定义
-        </template>
-        
-        <def-edit v-if="defEditVisible" ref="defEditRef" @success="search(false)"></def-edit>
-        
-        <template #footer>
-          <a-button @click="handleAppAddCancel">取消</a-button>
-          <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
-            <a-button type="primary">保存</a-button>
-          </a-popconfirm>
-        </template>
-      
-      </a-modal>
+    <!-- 新增弹窗 -->
+    <a-modal v-model:visible="appAddVisible" title-align="start" draggable>
+      <template #title>
+        <icon-plus />
+        新增流程定义
+      </template>
+      <def-add v-if="appAddVisible" ref="appAddRef" @success="search(false)"></def-add>
+      <template #footer>
+        <a-button @click="handleAppAddCancel">取消</a-button>
+        <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
+          <a-button type="primary">保存</a-button>
+        </a-popconfirm>
+      </template>
+    </a-modal>
 
-      <!-- 适用组织 -->
-      <a-drawer
+    <!-- 设计流程 -->
+    <a-modal v-model:visible="flowDesignVisible" title-align="start" fullscreen>
+      <template #title>
+        <icon-edit />
+        设计流程
+      </template>
+      <flow-design v-if="flowDesignVisible" ref="flowDesignRef" @success="search(false)"></flow-design>
+      <template #footer>
+        <a-button @click="() =>{ flowDesignVisible = false }">取消</a-button>
+        <a-popconfirm content="确定要保存？" @ok="handleSaveFlowDesign">
+          <a-button type="primary">保存</a-button>
+        </a-popconfirm>
+      </template>
+
+    </a-modal>
+
+    <!-- 适用组织 -->
+    <a-drawer
         :width="500"
         :hide-cancel="true"
-        :visible="defOrgVisible"   
+        :visible="defOrgVisible"
         @ok="handleDefOrgOk"
-      >
-        <template #header>
-          <span>适用组织</span>
-        </template>
-      <def-org v-if="defOrgVisible" ref="defOrgRef" ></def-org>
-      </a-drawer>
-   
+    >
+      <template #header>
+        <span>适用组织</span>
+      </template>
+      <def-org v-if="defOrgVisible" ref="defOrgRef"></def-org>
+    </a-drawer>
+
   </div>
 </template>
 
 <script setup>
 
-import { nextTick,onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import { appList } from "@/api/app/app";
-import { queryProcDef, deleteProcDef } from "@/api/def/config";
+import { deleteProcDef, queryProcDef } from "@/api/def/config";
 import DefAdd from "./DefAdd.vue";
-import DefEdit from "./flow-edit.vue";
+import FlowDesign from "./FlowDesign.vue";
 import DefOrg from "./DefOrg.vue";
 import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
 const queryParam = reactive({
-  appId:"",
+  appId: "",
   name: "",
   procDefKey: "",
 });
@@ -228,14 +227,14 @@ const handleAppAddOk = async () => {
   if (result) {
     appAddVisible.value = false;
   }
- 
+
 };
 
 const handleAppAddCancel = () => {
   appAddVisible.value = false;
 };
 // def delete
-const handleDelete = async (record)=> {
+const handleDelete = async (record) => {
   try {
     loading.value = true;
     const { success, message } = await deleteProcDef(record.procDefKey);
@@ -250,24 +249,22 @@ const handleDelete = async (record)=> {
     loading.value = false;
   }
 
-}
-
-// def edit
-const defEditRef = ref();
-const defEditVisible = ref(false);
-const editData = (record) => {
-  defEditVisible.value = true;
-  nextTick(() => {
-    // defEditRef.value.initdata(record);
-  });
-  
 };
-const handleDefEditOk = async () => {
- 
-    const result = await appEditRef.value.handleSubmit();
+
+// 设计流程
+const flowDesignRef = ref();
+const flowDesignVisible = ref(false);
+// 表格列表点击【设计】
+const handleDesign = (record) => {
+  flowDesignVisible.value = true;
+  nextTick(() => {
+    flowDesignRef.value.init(record);
+  });
+};
+const handleSaveFlowDesign = async () => {
+  const result = await flowDesignRef.value.handleSubmit();
   if (result) {
-    defEditVisible.value = false;
-    
+    flowDesignVisible.value = false;
   }
 };
 
@@ -283,7 +280,7 @@ const editDefOrg = (record) => {
   nextTick(() => {
     defOrgRef.value.init(record);
   });
-  
+
 };
 const handleDefOrgOk = () => {
   defOrgVisible.value = false;
@@ -295,6 +292,7 @@ const handleDefOrgOk = () => {
 .container {
   padding: 20px;
 }
+
 .arco-pagination {
   justify-content: flex-end;
 }

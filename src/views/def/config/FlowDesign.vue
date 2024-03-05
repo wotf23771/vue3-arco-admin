@@ -1,44 +1,46 @@
 <template>
-  <div class="fd-main">
-    <div class="fd-main-box" v-dragscroll>
-      <div class="flow-desgin">
-        <section class="flow-desgin-main">
-          <!-- 编辑界面缩放 -->
-          <div class="zoom">
-            <div class="zoom-out" :class="nowScale == 50 && 'disabled'" @click="zoomSize(1)">
-              <icon-minus />
-            </div>
-            <span>{{ nowScale }}%</span>
-            <div class="zoom-in" :class="nowScale == 300 && 'disabled'" @click="zoomSize(2)">
-              <icon-plus />
-            </div>
-          </div>
-
-          <!-- 流程节点界面 -->
-          <div class="box-scale" :style="`transform: scale(${nowScale / 100});`">
-            <!-- 绘制节点 -->
-            <NodeWrap v-model:nodeConfig="nodeConfig" v-model:flowPermission="flowPermission" />
-            <div class="node-wrap">
-              <div class="node-wrap-box end-node">
-                <div class="title">结束</div>
-                <div class="content">流程结束</div>
+  <a-spin :loading="loading">
+    <div class="fd-main">
+      <div class="fd-main-box" v-dragscroll>
+        <div class="flow-desgin">
+          <section class="flow-desgin-main">
+            <!-- 编辑界面缩放 -->
+            <div class="zoom">
+              <div class="zoom-out" :class="nowScale == 50 && 'disabled'" @click="zoomSize(1)">
+                <icon-minus />
+              </div>
+              <span>{{ nowScale }}%</span>
+              <div class="zoom-in" :class="nowScale == 300 && 'disabled'" @click="zoomSize(2)">
+                <icon-plus />
               </div>
             </div>
-          </div>
-        </section>
-      </div>
 
-      <PromoterDrawer></PromoterDrawer>
-      <ApproverDrawer></ApproverDrawer>
-      <CopyerDrawer></CopyerDrawer>
-      <ConditionDrawer></ConditionDrawer>
-      <TransactDrawer></TransactDrawer>
+            <!-- 流程节点界面 -->
+            <div class="box-scale" :style="`transform: scale(${nowScale / 100});`">
+              <!-- 绘制节点 -->
+              <NodeWrap v-model:nodeConfig="nodeConfig" v-model:flowPermission="flowPermission" />
+              <div class="node-wrap">
+                <div class="node-wrap-box end-node">
+                  <div class="title">结束</div>
+                  <div class="content">流程结束</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <PromoterDrawer></PromoterDrawer>
+        <ApproverDrawer></ApproverDrawer>
+        <CopyerDrawer></CopyerDrawer>
+        <ConditionDrawer></ConditionDrawer>
+        <TransactDrawer></TransactDrawer>
+      </div>
     </div>
-  </div>
+  </a-spin>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, toRaw, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useFlowStore } from "@/store/index";
 import ApproverDrawer from "@/components/flow/drawer/ApproverDrawer.vue";
@@ -49,7 +51,9 @@ import TransactDrawer from "@/components/flow/drawer/TransactDrawer.vue";
 import { IconMinus, IconPlus } from "@arco-design/web-vue/es/icon";
 import NodeWrap from "@/components/flow/NodeWrap.vue";
 import "@/components/flow/style/index.less";
+import { Message } from "@arco-design/web-vue";
 
+const emits = defineEmits(["success"]);
 let { flowDefinition, setFlowDefId } = useFlowStore();
 const flowStore = useFlowStore();
 const router = useRouter();
@@ -79,14 +83,7 @@ watch(nodeConfig, () => {
 
 onMounted(async () => {
   console.log("flow.index", flowDefinition);
-  let flowDef = {
-    workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
-    nodeConfig: { name: "发起", type: 0 },
-    flowPermission: { type: 0 },
-  };
-  flowStore.setFlowDef(flowDef);
-  // flowStore.setFlowGroups(groups.value);
-  loadFlowData(flowDef);
+
 });
 
 // 缩放
@@ -101,18 +98,48 @@ const zoomSize = (type) => {
     }
   }
 };
+
+const loading = ref(false);
+
+const init = (record) => {
+  let flowDef = {
+    workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
+    nodeConfig: { name: "发起", type: 0 },
+    flowPermission: { type: 0 },
+  };
+  flowStore.setFlowDef(flowDef);
+  // flowStore.setFlowGroups(groups.value);
+  loadFlowData(flowDef);
+};
+
+const handleSubmit = async () => {
+  try {
+    loading.value = true;
+    let flowDef = JSON.parse(JSON.stringify(toRaw(flowDefinition)));
+    console.log(flowDef);
+    Message.success("更新成功");
+    emits("success");
+    return true;
+  } catch (err) {
+    console.log("err", err);
+    return false;
+  } finally {
+    loading.value = false;
+  }
+};
+
+defineExpose({ init, handleSubmit });
 </script>
 
 <style lang="less">
 // @canvas-bg: #f5f5f7;
 @canvas-bg: #f2f3f5;
 .fd-main {
-  // position: fixed;
-  top: 90px;
+  position: fixed;
+  top: 50px;
   left: 0;
   right: 0;
-  bottom: 0;
-  height: calc(100% - 90px);
+  bottom: 70px;
   background-color: @canvas-bg;
   overflow: hidden;
 
@@ -201,8 +228,6 @@ const zoomSize = (type) => {
     justify-content: center;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
-    min-width: -webkit-min-content;
-    min-width: -moz-min-content;
     min-width: min-content;
     transform-origin: 50% 0px 0px;
   }
