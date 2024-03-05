@@ -19,6 +19,10 @@ export interface ProcDefForm {
   version?: number;  //版本号
 }
 
+export interface ProcDesignForm {
+  process?: string;  //版本号
+}
+
 export function queryProcDef(parameter: PageParam, query: ProcDefQuery) {
   return request({
     url: "/procDef/queryProcDef",
@@ -35,6 +39,24 @@ export function saveProcDef( form: ProcDefForm) {
   });
 }
 
+export function updateProcDef(id: string, form: ProcDesignForm) {
+  return request({
+    url: "/procDef/updateProcDef",
+    method: "post",
+    params: {
+      id: id
+    },
+    data: form
+  });
+}
+
+export function getProcDef(id :string) {
+  return request({
+    url: "/procDef/getProcDef",
+    method: "post",
+    params: { id },
+  });
+}
 
 export function deleteProcDef(procDefKey :string) {
   return request({
@@ -42,4 +64,30 @@ export function deleteProcDef(procDefKey :string) {
     method: "post",
     params: { procDefKey },
   });
-  }
+}
+
+// 发起流程
+export function testStart(key :string) {
+  return request({
+    url: "/procInst/testStart",
+    method: "get",
+    params: { key },
+  });
+}
+
+// 查看流程图
+export function getProcDefImage(key :string) {
+  return request({
+    url: "/procInst/getProcDefImage",
+    method: "get",
+    params: { key },
+  });
+}
+
+export function getXMLDefinition(key :string) {
+  return request({
+    url: "/procDef/getXMLDefinition",
+    method: "get",
+    params: { key },
+  });
+}

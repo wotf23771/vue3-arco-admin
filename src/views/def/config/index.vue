@@ -72,14 +72,21 @@
           <a-table-column title="流程定义key" data-index="procDefKey" align="center" width="200"></a-table-column>
           <a-table-column title="关联表单" data-index="formName" align="center"></a-table-column>
           <a-table-column title="激活版本" data-index="activeActDefVersion" align="center" width="200"></a-table-column>
-          <a-table-column title="操作" align="center" width="300">
+          <a-table-column title="操作" align="center" width="400">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="handleDesign(record)">设计</a-link>
                 <a-link :hoverable="false">版本</a-link>
+                <a-link :hoverable="false" @click="handleGetProcDefImage(record)">查看</a-link>
+                <a-link :hoverable="false" @click="handleGetXMLDefinition(record)">查看XML</a-link>
+                
+                <a-popconfirm content="确定要发起流程？" @ok="handleTestStart(record)">
+                  <a-link :hoverable="false">发起流程</a-link>
+                </a-popconfirm>
                 <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
                   <a-link :hoverable="false" status="danger">删除</a-link>
                 </a-popconfirm>
+                
                 <!-- <a-link :hoverable="false" @click="editData(record)" >关联表单</a-link> -->
                 <a-link :hoverable="false" @click="editDefOrg(record)">适用组织</a-link>
               </a-space>
@@ -149,7 +156,7 @@
 
 import { nextTick, onMounted, reactive, ref } from "vue";
 import { appList } from "@/api/app/app";
-import { deleteProcDef, queryProcDef } from "@/api/def/config";
+import { deleteProcDef, queryProcDef,testStart,getProcDefImage,getXMLDefinition } from "@/api/def/config";
 import DefAdd from "./DefAdd.vue";
 import FlowDesign from "./FlowDesign.vue";
 import DefOrg from "./DefOrg.vue";
@@ -285,6 +292,59 @@ const editDefOrg = (record) => {
 const handleDefOrgOk = () => {
   defOrgVisible.value = false;
 };
+
+// 测试启动流程
+const handleTestStart = async (record) => {
+  try {
+    loading.value = true;
+    const { success, message } = await testStart(record.procDefKey);
+    if (success) {
+      Message.success("操作成功");
+      search(false);
+    } else {
+      Message.error(message || "操作失败");
+    }
+    loading.value = false;
+  } catch (err) {
+    loading.value = false;
+  }
+
+};
+
+const handleGetProcDefImage = async (record) => {
+  try {
+    loading.value = true;
+    const { success, message } = await getProcDefImage(record.procDefKey);
+    if (success) {
+      Message.success("操作成功");
+      search(false);
+    } else {
+      Message.error(message || "操作失败");
+    }
+    loading.value = false;
+  } catch (err) {
+    loading.value = false;
+  }
+
+};
+
+const handleGetXMLDefinition = async (record) => {
+  try {
+    loading.value = true;
+    const { success, message } = await getXMLDefinition(record.procDefKey);
+    if (success) {
+      Message.success("操作成功");
+      search(false);
+    } else {
+      Message.error(message || "操作失败");
+    }
+    loading.value = false;
+  } catch (err) {
+    loading.value = false;
+  }
+
+};
+
 
 </script>
 

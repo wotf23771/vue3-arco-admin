@@ -52,6 +52,7 @@ import { IconMinus, IconPlus } from "@arco-design/web-vue/es/icon";
 import NodeWrap from "@/components/flow/NodeWrap.vue";
 import "@/components/flow/style/index.less";
 import { Message } from "@arco-design/web-vue";
+import { getProcDef,updateProcDef } from "@/api/def/config";
 
 const emits = defineEmits(["success"]);
 let { flowDefinition, setFlowDefId } = useFlowStore();
@@ -100,13 +101,23 @@ const zoomSize = (type) => {
 };
 
 const loading = ref(false);
-
-const init = (record) => {
+const id = ref('');
+const init = async (record) => {
+  id.value = record.id;
   let flowDef = {
     workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
     nodeConfig: { name: "发起", type: 0 },
     flowPermission: { type: 0 },
   };
+
+  const { success, data, message } = await getProcDef(id.value);
+  if (success) {
+    if (data && data.process) {
+      flowDef.nodeConfig = JSON.parse(data.process);
+    }
+  }
+
+ 
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
@@ -115,8 +126,19 @@ const init = (record) => {
 const handleSubmit = async () => {
   try {
     loading.value = true;
-    let flowDef = JSON.parse(JSON.stringify(toRaw(flowDefinition)));
+    // let flowDef = JSON.parse(JSON.stringify(toRaw(flowDefinition)));
+    let flowDef = JSON.stringify(toRaw(flowDefinition.nodeConfig));
     console.log(flowDef);
+    // Message.success("更新成功");
+    // emits("success");
+    var form = {
+      process: flowDef
+    };
+    const { code, success, message } = await updateProcDef(id.value,form);
+    if (!success) {
+      Message.error(message || "更新失败");
+      return false;
+    }
     Message.success("更新成功");
     emits("success");
     return true;
