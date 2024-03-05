@@ -1,240 +1,301 @@
 <template>
-  <div class="fd-main">
-    <div class="fd-main-box" v-dragscroll>
-      <div class="flow-desgin">
-        <section class="flow-desgin-main">
-          <!-- 编辑界面缩放 -->
-          <div class="zoom">
-            <div class="zoom-out" :class="nowScale == 50 && 'disabled'" @click="zoomSize(1)">
-              <icon-minus />
-            </div>
-            <span>{{ nowScale }}%</span>
-            <div class="zoom-in" :class="nowScale == 300 && 'disabled'" @click="zoomSize(2)">
-              <icon-plus />
-            </div>
-          </div>
+  <div class="container">
+    <a-card>
+      <a-row>
+        <a-col :flex="1">
+          <a-form :model="queryParam" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" label-align="right">
+            <a-row>
+              <a-col :span="6">
+                <a-form-item field="appId" label="所属应用">
+                  <a-select  v-model="queryParam.appId" placeholder="请选择" allow-clear>
+                    <a-option :key="item.appId" v-for="item of appDataList" :value="item.appId" :label="item.appName"></a-option>
+                    
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="name" label="流程定义名称">
+                  <a-input v-model="queryParam.name" placeholder="请输入流程定义名称" allow-clear />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="procDefKey" label="流程定义key">
+                  <a-input v-model="queryParam.procDefKey" placeholder="请输入流程定义key" allow-clear />
+                </a-form-item>
+              </a-col>
 
-          <!-- 流程节点界面 -->
-          <div class="box-scale" :style="`transform: scale(${nowScale / 100});`">
-            <!-- 绘制节点 -->
-            <NodeWrap v-model:nodeConfig="nodeConfig" v-model:flowPermission="flowPermission" />
-            <div class="node-wrap">
-              <div class="node-wrap-box end-node">
-                <div class="title">结束</div>
-                <div class="content">流程结束</div>
-              </div>
-            </div>
-          </div>
-        </section>
+            </a-row>
+          </a-form>
+        </a-col>
+        <a-col :flex="'86px'" style="text-align: right">
+          <a-space :size="18">
+            <a-button type="primary" @click="search(true)">
+              <template #icon>
+                <icon-search />
+              </template>
+              查询
+            </a-button>
+            <a-button @click="reset">
+              <template #icon>
+                <icon-refresh />
+              </template>
+              重置
+            </a-button>
+          </a-space>
+        </a-col>
+      </a-row>
+      <a-divider style="margin-top: 0" />
+      <a-row style="margin-bottom: 16px">
+        <a-col :span="12">
+          <a-space>
+            <a-button type="primary" @click="handleAdd">
+              <template #icon>
+                <icon-plus />
+              </template>
+              新增流程定义
+            </a-button>
+          </a-space>
+        </a-col>
+      </a-row>
+      <a-table
+          row-key="id"
+          :loading="loading"
+          :pagination="false"
+          :data="tableData"
+          page-position="tr"
+          :bordered="false"
+      >
+        <template #columns>
+          <a-table-column title="序号" data-index="index" align="center" width="80"></a-table-column>
+          <a-table-column title="所属应用" data-index="appName" align="center" width="200"></a-table-column>
+          <a-table-column title="流程定义名称" data-index="name" align="center" width="200"></a-table-column>
+          <a-table-column title="流程定义key" data-index="procDefKey" align="center" width="200"></a-table-column>
+          <a-table-column title="关联表单" data-index="formName" align="center" ></a-table-column>
+          <a-table-column title="激活版本" data-index="activeActDefVersion" align="center" width="200"></a-table-column>
+          <a-table-column title="操作" align="center" width="300">
+            <template #cell="{ record }">
+              <a-space>
+                <a-link :hoverable="false" @click="editData(record)" >设计</a-link>
+                <a-link :hoverable="false"  >版本</a-link>
+                <a-popconfirm content="确定要删除？" @ok="handleDelete(record)">
+                  <a-link :hoverable="false" status="danger">删除</a-link>
+                </a-popconfirm>
+                <!-- <a-link :hoverable="false" @click="editData(record)" >关联表单</a-link> -->
+                <a-link :hoverable="false" @click="editDefOrg(record)" >适用组织</a-link>
+              </a-space>
+            </template>
+          </a-table-column>
+        </template>
+      </a-table>
+      <div style="margin-top:5px;">
+        <a-pagination
+            :current="tablePagination.pageNo"
+            :page-size="tablePagination.pageSize"
+            :total="tablePagination.totalCount"
+            show-total show-jumper
+            @change="handleTablePageChange"
+            @page-size-change="handleTablePageSizeChange"
+        />
       </div>
+    </a-card>
+      <!-- 新增弹窗 -->
+      <a-modal v-model:visible="appAddVisible" title-align="start" draggable>
+        <template #title>
+          <icon-plus />
+          新增流程定义
+        </template>
+        <def-add v-if="appAddVisible" ref="appAddRef"  @success="search(false)"></def-add>
+        <template #footer>
+          <a-button @click="handleAppAddCancel">取消</a-button>
+          <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
+            <a-button type="primary">保存</a-button>
+          </a-popconfirm>
+        </template>
+      </a-modal>
+      <!-- 编辑弹窗 -->
+      <a-modal v-model:visible="defEditVisible" title-align="start" fullscreen>
+        <template #title>
+          <icon-edit />
+          编辑流程定义
+        </template>
+        
+        <def-edit v-if="defEditVisible" ref="defEditRef" @success="search(false)"></def-edit>
+        
+        <template #footer>
+          <a-button @click="handleAppAddCancel">取消</a-button>
+          <a-popconfirm content="确定要保存？" @ok="handleAppAddOk">
+            <a-button type="primary">保存</a-button>
+          </a-popconfirm>
+        </template>
+      
+      </a-modal>
 
-      <PromoterDrawer></PromoterDrawer>
-      <ApproverDrawer></ApproverDrawer>
-      <CopyerDrawer></CopyerDrawer>
-      <ConditionDrawer></ConditionDrawer>
-      <TransactDrawer></TransactDrawer>
-    </div>
+      <!-- 适用组织 -->
+      <a-drawer
+        :width="500"
+        :hide-cancel="true"
+        :visible="defOrgVisible"   
+        @ok="handleDefOrgOk"
+      >
+        <template #header>
+          <span>适用组织</span>
+        </template>
+      <def-org v-if="defOrgVisible" ref="defOrgRef" ></def-org>
+      </a-drawer>
+   
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useFlowStore } from "@/store/index";
-import ApproverDrawer from "@/components/flow/drawer/ApproverDrawer.vue";
-import ConditionDrawer from "@/components/flow/drawer/ConditionDrawer.vue";
-import CopyerDrawer from "@/components/flow/drawer/CopyerDrawer.vue";
-import PromoterDrawer from "@/components/flow/drawer/PromoterDrawer.vue";
-import TransactDrawer from "@/components/flow/drawer/TransactDrawer.vue";
-import { IconMinus, IconPlus } from "@arco-design/web-vue/es/icon";
-import NodeWrap from "@/components/flow/NodeWrap.vue";
-import "@/components/flow/style/index.less";
 
-let { flowDefinition, setFlowDefId } = useFlowStore();
-const flowStore = useFlowStore();
-const router = useRouter();
+import { nextTick,onMounted, reactive, ref } from "vue";
+import { appList } from "@/api/app/app";
+import { queryProcDef, deleteProcDef } from "@/api/def/config";
+import DefAdd from "./DefAdd.vue";
+import DefEdit from "./flow-edit.vue";
+import DefOrg from "./DefOrg.vue";
+import { Message } from "@arco-design/web-vue";
 
-let nowScale = ref(100);
-let nodeConfig = ref({});
-let workFlowDef = ref({});
-let flowPermission = ref({});
-let flowWidgets = ref([]); // 作为分支条件的组件
+const loading = ref(false);
+const queryParam = reactive({
+  appId:"",
+  name: "",
+  procDefKey: "",
+});
 
-const loadFlowData = (flowDefinition) => {
-  const { nodeConfig: nodeConfig0, flowPermission: flowPermission0, workFlowDef: workFlowDef0, flowWidgets: flowWidgets0 } = flowDefinition;
-  nodeConfig.value = nodeConfig0;
-  flowPermission.value = flowPermission0;
-  workFlowDef.value = workFlowDef0;
-  flowWidgets.value = flowWidgets0;
-  flowStore.setFlowDefId(workFlowDef0.id);
+const appDataList = ref([]);
+const loadAppList = () => {
+  appList().then((res) => {
+    appDataList.value = res.data;
+  });
+};
+const tableData = ref([]);
+const tablePagination = reactive({
+  pageNo: 1,
+  pageSize: 10,
+  totalCount: 0,
+});
+const handleTablePageChange = (pageNo) => {
+  tablePagination.pageNo = pageNo;
+  loadTableData();
+};
+const handleTablePageSizeChange = (pageSize) => {
+  tablePagination.pageSize = pageSize;
+  loadTableData();
 };
 
-watch(flowPermission, () => {
-  flowDefinition.flowPermission = flowPermission.value;
+onMounted(() => {
+  loadTableData();
+  loadAppList();
 });
 
-watch(nodeConfig, () => {
-  flowDefinition.nodeConfig = nodeConfig.value;
-});
+// 搜索
+const search = (first = true) => {
+  if (first) {
+    tablePagination.pageNo = 1;
+  }
+  loadTableData();
+};
 
-onMounted(async () => {
-  console.log("flow.index", flowDefinition);
-  let flowDef = {
-    workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
-    nodeConfig: { name: "发起", type: 0 },
-    flowPermission: { type: 0 },
-  };
-  flowStore.setFlowDef(flowDef);
-  // flowStore.setFlowGroups(groups.value);
-  loadFlowData(flowDef);
-});
-
-// 缩放
-const zoomSize = (type) => {
-  if (type == 1) {
-    if (nowScale.value > 50) {
-      nowScale.value -= 10;
-    }
-  } else {
-    if (nowScale.value < 300) {
-      nowScale.value += 10;
-    }
+const reset = () => {
+  queryParam.appId = "";
+  queryParam.name = "";
+  queryParam.procDefKey = "";
+  search();
+};
+const loadTableData = async () => {
+  try {
+    loading.value = true;
+    const { data, page } = await queryProcDef(tablePagination, queryParam);
+    tableData.value = data;
+    tablePagination.totalCount = page.totalCount;
+  } catch (err) {
+    loading.value = false;
+    console.log("err", err);
+  } finally {
+    loading.value = false;
   }
 };
+
+// app add
+const appAddRef = ref();
+const appAddVisible = ref(false);
+const handleAdd = () => {
+  appAddVisible.value = true;
+};
+const handleAppAddOk = async () => {
+  const result = await appAddRef.value.handleSubmit();
+  if (result) {
+    appAddVisible.value = false;
+  }
+ 
+};
+
+const handleAppAddCancel = () => {
+  appAddVisible.value = false;
+};
+// def delete
+const handleDelete = async (record)=> {
+  try {
+    loading.value = true;
+    const { success, message } = await deleteProcDef(record.procDefKey);
+    if (success) {
+      Message.success("删除成功");
+      search(false);
+    } else {
+      Message.error(message || "删除失败");
+    }
+    loading.value = false;
+  } catch (err) {
+    loading.value = false;
+  }
+
+}
+
+// def edit
+const defEditRef = ref();
+const defEditVisible = ref(false);
+const editData = (record) => {
+  defEditVisible.value = true;
+  nextTick(() => {
+    // defEditRef.value.initdata(record);
+  });
+  
+};
+const handleDefEditOk = async () => {
+ 
+    const result = await appEditRef.value.handleSubmit();
+  if (result) {
+    defEditVisible.value = false;
+    
+  }
+};
+
+const handleAppEditCancel = () => {
+  defEditVisible.value = false;
+};
+
+// 适用组织
+const defOrgRef = ref();
+const defOrgVisible = ref(false);
+const editDefOrg = (record) => {
+  defOrgVisible.value = true;
+  nextTick(() => {
+    defOrgRef.value.init(record);
+  });
+  
+};
+const handleDefOrgOk = () => {
+  defOrgVisible.value = false;
+};
+
 </script>
 
-<style lang="less">
-// @canvas-bg: #f5f5f7;
-@canvas-bg: #f2f3f5;
-.fd-main {
-  position: fixed;
-  top: 90px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: calc(100% - 90px);
-  background-color: @canvas-bg;
-  overflow: hidden;
-
-  .fd-main-box {
-    height: 100%;
-    overflow-y: auto;
-  }
+<style scoped lang="less">
+.container {
+  padding: 20px;
 }
-
-.flow-desgin {
-  height: 100%;
-  z-index: 1;
-  cursor: grab;
-}
-
-.flow-desgin-main {
-  width: 100%;
-  background-color: @canvas-bg;
-  user-select: none;
-
-  .zoom {
-    display: flex;
-    position: fixed;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    height: 40px;
-    width: 125px;
-    right: 40px;
-    margin-top: 30px;
-    z-index: 10;
-
-    .zoom-in,
-    .zoom-out {
-      width: 30px;
-      height: 30px;
-      background: #fff;
-      color: #c1c1cd;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      color: #111;
-      border-radius: 50%;
-      transition: all 0.5s ease;
-
-      &:hover {
-        // transform: scale(1.1);
-        box-shadow: 0 13px 27px 0 rgba(0, 0, 0, 0.1);
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        border-radius: 50%;
-        border: 1px solid transparent;
-        box-shadow: 0 2px 5px #0000001a;
-      }
-    }
-
-    .zoom-in.disabled,
-    .zoom-out.disabled {
-      opacity: 0.5;
-    }
-  }
-
-  .box-scale {
-    transform: scale(1);
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding: 54.5px 0;
-    -webkit-box-align: start;
-    -ms-flex-align: start;
-    align-items: flex-start;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    min-width: -webkit-min-content;
-    min-width: -moz-min-content;
-    min-width: min-content;
-    transform-origin: 50% 0px 0px;
-  }
-
-  .end-node {
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 4px;
-      border-style: solid;
-      border-width: 8px 6px 4px;
-      border-color: #cacaca transparent transparent;
-    }
-
-    .title {
-      height: 28px;
-      border-radius: 8px 8px 0 0;
-      background: #a9b4cd;
-      padding: 0 12px;
-    }
-
-    .content {
-      color: #646a73;
-    }
-  }
+.arco-pagination {
+  justify-content: flex-end;
 }
 </style>

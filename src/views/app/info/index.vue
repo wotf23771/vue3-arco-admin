@@ -227,7 +227,7 @@ const handleAppEditOk = async () => {
     const result = await appEditRef.value.handleSubmit();
   if (result) {
     appEditVisible.value = false;
-    loadTableData();
+    // loadTableData();
   }
 };
 
