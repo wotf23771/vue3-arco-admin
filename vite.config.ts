@@ -55,7 +55,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     build: {
-      sourcemap: true,
+      sourcemap: false,
       rollupOptions: {
         output: {
           manualChunks: {
