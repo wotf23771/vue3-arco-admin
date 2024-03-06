@@ -77,9 +77,7 @@
               <a-space>
                 <a-link :hoverable="false" @click="handleDesign(record)">设计</a-link>
                 <a-link :hoverable="false" @click="editDefVersion(record)">版本</a-link>
-                <a-link :hoverable="false" @click="handleGetProcDefImage(record)">查看</a-link>
-                <a-link :hoverable="false" @click="handleGetXMLDefinition(record)">查看XML</a-link>
-                
+                <!-- <a-link :hoverable="false" @click="handleGetProcDefImage(record)">查看</a-link> -->
                 <a-popconfirm content="确定要发起流程？" @ok="handleTestStart(record)">
                   <a-link :hoverable="false">发起流程</a-link>
                 </a-popconfirm>
@@ -161,6 +159,7 @@
       </template>
       <def-version v-if="defVersionVisible" ref="defVersionRef"></def-version>
     </a-drawer>
+
 
   </div>
 </template>
@@ -317,6 +316,9 @@ const editDefVersion = (record) => {
 const handleDefVersionOk = () => {
   defVersionVisible.value = false;
 };
+
+
+
 // 测试启动流程
 const handleTestStart = async (record) => {
   try {
