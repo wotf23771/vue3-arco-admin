@@ -52,7 +52,7 @@ import { IconMinus, IconPlus } from "@arco-design/web-vue/es/icon";
 import NodeWrap from "@/components/flow/NodeWrap.vue";
 import "@/components/flow/style/index.less";
 import { Message } from "@arco-design/web-vue";
-import { getProcDef,getProcDefByVersion,updateProcDef } from "@/api/def/config";
+import { getProcDef, getProcDefByVersion, updateProcDef } from "@/api/def/config";
 
 const emits = defineEmits(["success"]);
 let { flowDefinition, setFlowDefId } = useFlowStore();
@@ -101,7 +101,7 @@ const zoomSize = (type) => {
 };
 
 const loading = ref(false);
-const id = ref('');
+const id = ref("");
 const init = async (record) => {
   id.value = record.id;
   let flowDef = {
@@ -116,7 +116,6 @@ const init = async (record) => {
       flowDef.nodeConfig = JSON.parse(data.process);
     }
   }
-
 
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
@@ -139,7 +138,6 @@ const initByProcDefVersion = async (record) => {
     }
   }
 
-
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
@@ -148,15 +146,16 @@ const initByProcDefVersion = async (record) => {
 const handleSubmit = async () => {
   try {
     loading.value = true;
-    // let flowDef = JSON.parse(JSON.stringify(toRaw(flowDefinition)));
+    let flowDef1 = JSON.stringify(toRaw(flowDefinition));
     let flowDef = JSON.stringify(toRaw(flowDefinition.nodeConfig));
+    console.log(flowDef1);
     console.log(flowDef);
     // Message.success("更新成功");
     // emits("success");
     var form = {
-      process: flowDef
+      process: flowDef,
     };
-    const { code, success, message } = await updateProcDef(id.value,form);
+    const { code, success, message } = await updateProcDef(id.value, form);
     if (!success) {
       Message.error(message || "更新失败");
       return false;
@@ -172,7 +171,7 @@ const handleSubmit = async () => {
   }
 };
 
-defineExpose({ init,initByProcDefVersion, handleSubmit });
+defineExpose({ init, initByProcDefVersion, handleSubmit });
 </script>
 
 <style lang="less">

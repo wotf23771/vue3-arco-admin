@@ -15,10 +15,10 @@
               <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.APPROVE].icon"></span></div>
               <div class="node-text">审批人</div>
             </div>
-            <div class="add-node-popover-item copyer" @click="onNodeAddClicked(NODE.COPY)">
-              <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.COPY].icon"></span></div>
-              <div class="node-text">抄送人</div>
-            </div>
+            <!--            <div class="add-node-popover-item copyer" @click="onNodeAddClicked(NODE.COPY)">-->
+            <!--              <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.COPY].icon"></span></div>-->
+            <!--              <div class="node-text">抄送人</div>-->
+            <!--            </div>-->
             <!--            <div class="add-node-popover-item transactor" @click="onNodeAddClicked(NODE.TRANSACT)">-->
             <!--              <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.TRANSACT].icon"></span></div>-->
             <!--              <div class="node-text">办理人</div>-->
@@ -99,6 +99,7 @@ const onNodeAddClicked = (type) => {
         assignable: true, // 可转交
         signable: true, // 可变签
         backable: true, // 可回退
+        backSubmitType: true, // 驳回跳转提交
         childNode: props.childNodeP,
       };
       setFormAuth(newNode); // 设置节点的表单权限

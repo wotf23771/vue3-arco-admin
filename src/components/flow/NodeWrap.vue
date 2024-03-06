@@ -132,10 +132,9 @@
 </template>
 
 <script setup>
-import { useFlowStore, useOrganStore } from "@/store/index";
+import { useFlowStore } from "@/store/index";
 import { IconClose, IconLeft, IconPlus, IconRight } from "@arco-design/web-vue/es/icon";
 import { computed, getCurrentInstance, onMounted, reactive, ref, watch } from "vue";
-import ArrayUtil from "./common/ArrayUtil";
 import { NODE } from "./common/FlowConstant";
 import { showExpNodeContent } from "./common/FormExp";
 import AddNode from "@/components/flow/AddNode.vue";
@@ -155,7 +154,6 @@ let props = defineProps({
 });
 
 let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
-let { roles: allRoles, users: allUsers, getById } = useOrganStore();
 let flowStore = useFlowStore();
 let {
   flowDefinition,
@@ -183,10 +181,6 @@ let nodeSettings = reactive({
   [NODE.COPY]: { placeholder: "抄送人", bgColor: "#3296fa" },
   [NODE.TRANSACT]: { placeholder: "办理人", bgColor: "#926bd5" },
 });
-// nodeSettings[NODE.START] = { placeholder: "发起人", bgColor: "#a9b4cd" };
-// nodeSettings[NODE.APPROVE] = { placeholder: "审批人", bgColor: "#ff943e" };
-// nodeSettings[NODE.COPY] = { placeholder: "抄送人", bgColor: "#3296fa" };
-// nodeSettings[NODE.TRANSACT] = { placeholder: "办理人", bgColor: "#926bd5" };
 let nodeDefaultName = computed(() => nodeSettings[props.nodeConfig.type].placeholder);
 let nodeBgColor = computed(() => nodeSettings[props.nodeConfig.type].bgColor);
 
@@ -208,70 +202,23 @@ let showNodeContent = computed(() => {
     else {
       return assignees
           .map((assignee) => {
-            let { assigneeType, layerType, layer, roles, assignees } = assignee;
-            if (assigneeType == 0) return "发起人本人";
-            else if (assigneeType == 1) {
-              if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}上级`;
-              else return `最高上级减${layer != 0 ? layer + "级" : ""}`;
+            let { assigneeType, assignees } = assignee;
+            if (assigneeType == 0) {
+              return "发起人本人";
+            } else if (assigneeType == 1) {
+              return "发起人部门负责人";
             } else if (assigneeType == 2) {
-              if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}部门负责人`;
-              else return `最高部门负责人减${layer != 0 ? layer + "级" : ""}`;
-            } else if (assigneeType == 3) {
-              return roles?.map((roleId) => ArrayUtil.get(allRoles, "id", roleId).name).join(", ");
-            } else if (assigneeType == 4) {
               return assignees?.map((user) => user.name).join(", ");
-            } else if (assigneeType == 5) {
-              return "连续多级上级";
-            } else if (assigneeType == 6) {
-              return "连续多级部门负责人";
-            } else if (assigneeType == 7) {
+            } else if (assigneeType == 3) {
+              return assignees?.map((user) => user.name).join(", ");
+            } else if (assigneeType == 10) {
               return "发起人自选";
+            } else if (assigneeType == 11) {
+              return "审批人规则";
             }
           })
           .join(", ");
     }
-  } else if (nodeType == NODE.COPY) {
-    // 抄送人节点
-    let { ccs } = props.nodeConfig;
-    return ccs
-        .map((cc) => {
-          let { ccType, layerType, layer, roles, assignees } = cc;
-          if (ccType == 0) return "发起人本人";
-          else if (ccType == 1) {
-            if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}上级`;
-            else return `最高上级减${layer != 0 ? layer + "级" : ""}`;
-          } else if (ccType == 2) {
-            if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}部门负责人`;
-            else return `最高部门负责人减${layer != 0 ? layer + "级" : ""}`;
-          } else if (ccType == 3) {
-            return roles?.map((roleId) => ArrayUtil.get(allRoles, "id", roleId).name).join(", ");
-          } else if (ccType == 4) {
-            return assignees?.map((userId) => ArrayUtil.get(allUsers, "id", userId).name).join(", ");
-          }
-        })
-        .join(", ");
-  } else if (nodeType == NODE.TRANSACT) {
-    // 办理人节点
-    let { transactors } = props.nodeConfig;
-    return transactors
-        .map((transactor) => {
-          let { transactorType, layerType, layer, roles, assignees } = transactor;
-          if (transactorType == 0) return "发起人本人";
-          else if (transactorType == 1) {
-            if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}上级`;
-            else return `最高上级减${layer != 0 ? layer + "级" : ""}`;
-          } else if (transactorType == 2) {
-            if (layerType == 0) return `直属${layer != 0 ? layer + "级" : ""}部门负责人`;
-            else return `最高部门负责人减${layer != 0 ? layer + "级" : ""}`;
-          } else if (transactorType == 3) {
-            return roles?.map((roleId) => ArrayUtil.get(allRoles, "id", roleId).name).join(", ");
-          } else if (transactorType == 4) {
-            return assignees?.map((userId) => ArrayUtil.get(allUsers, "id", userId).name).join(", ");
-          } else if (transactorType == 7) {
-            return "发起人自选";
-          }
-        })
-        .join(", ");
   }
   return null;
 });
