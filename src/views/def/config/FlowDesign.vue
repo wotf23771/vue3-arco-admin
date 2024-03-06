@@ -52,7 +52,7 @@ import { IconMinus, IconPlus } from "@arco-design/web-vue/es/icon";
 import NodeWrap from "@/components/flow/NodeWrap.vue";
 import "@/components/flow/style/index.less";
 import { Message } from "@arco-design/web-vue";
-import { getProcDef,updateProcDef } from "@/api/def/config";
+import { getProcDef,getProcDefByVersion,updateProcDef } from "@/api/def/config";
 
 const emits = defineEmits(["success"]);
 let { flowDefinition, setFlowDefId } = useFlowStore();
@@ -123,6 +123,28 @@ const init = async (record) => {
   loadFlowData(flowDef);
 };
 
+const initByProcDefVersion = async (record) => {
+  
+  let flowDef = {
+    workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
+    nodeConfig: { name: "发起", type: 0 },
+    flowPermission: { type: 0 },
+  };
+
+  const { success, data, message } = await getProcDefByVersion(record.id);
+  if (success) {
+    if (data && data.process) {
+      id.value = data.id;
+      flowDef.nodeConfig = JSON.parse(data.process);
+    }
+  }
+
+ 
+  flowStore.setFlowDef(flowDef);
+  // flowStore.setFlowGroups(groups.value);
+  loadFlowData(flowDef);
+};
+
 const handleSubmit = async () => {
   try {
     loading.value = true;
@@ -150,7 +172,7 @@ const handleSubmit = async () => {
   }
 };
 
-defineExpose({ init, handleSubmit });
+defineExpose({ init,initByProcDefVersion, handleSubmit });
 </script>
 
 <style lang="less">

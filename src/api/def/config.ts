@@ -91,3 +91,35 @@ export function getXMLDefinition(key :string) {
     params: { key },
   });
 }
+
+//获得流程定义版本列表
+export function listProcDefVersion(key :string) {
+  return request({
+    url: "/procDef/listProcDefVersion",
+    method: "get",
+    params: { key },
+  });
+}
+// 激活流程定义ID
+export function activeProcDefVersion(key :string,actDefId: string) {
+  return request({
+    url: "/procDef/activeProcDefVersion",
+    method: "post",
+    params: { key, actDefId},
+  });
+}
+// 删除流程定义历史版本
+export function deleteProcDefVersion(key :string,actDefId: string) {
+  return request({
+    url: "/procDef/deleteProcDefVersion",
+    method: "post",
+    params: { key, actDefId},
+  });
+}
+export function getProcDefByVersion(id: string) {
+  return request({
+    url: "/procDef/getProcDefByVersion",
+    method: "post",
+    params: { id},
+  });
+}

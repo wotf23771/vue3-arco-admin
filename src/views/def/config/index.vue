@@ -71,12 +71,12 @@
           <a-table-column title="流程定义名称" data-index="name" align="center" width="200"></a-table-column>
           <a-table-column title="流程定义key" data-index="procDefKey" align="center" width="200"></a-table-column>
           <a-table-column title="关联表单" data-index="formName" align="center"></a-table-column>
-          <a-table-column title="激活版本" data-index="activeActDefVersion" align="center" width="200"></a-table-column>
+          <a-table-column title="激活版本" data-index="activeActDefVersion" align="center" width="100"></a-table-column>
           <a-table-column title="操作" align="center" width="400">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="handleDesign(record)">设计</a-link>
-                <a-link :hoverable="false">版本</a-link>
+                <a-link :hoverable="false" @click="editDefVersion(record)">版本</a-link>
                 <a-link :hoverable="false" @click="handleGetProcDefImage(record)">查看</a-link>
                 <a-link :hoverable="false" @click="handleGetXMLDefinition(record)">查看XML</a-link>
                 
@@ -149,6 +149,19 @@
       <def-org v-if="defOrgVisible" ref="defOrgRef"></def-org>
     </a-drawer>
 
+    <!-- 流程版本 -->
+    <a-drawer
+        :width="1000"
+        :hide-cancel="true"
+        :visible="defVersionVisible"
+        @ok="handleDefVersionOk"
+    >
+      <template #header>
+        <span>流程版本</span>
+      </template>
+      <def-version v-if="defVersionVisible" ref="defVersionRef"></def-version>
+    </a-drawer>
+
   </div>
 </template>
 
@@ -160,6 +173,7 @@ import { deleteProcDef, queryProcDef,testStart,getProcDefImage,getXMLDefinition 
 import DefAdd from "./DefAdd.vue";
 import FlowDesign from "./FlowDesign.vue";
 import DefOrg from "./DefOrg.vue";
+import DefVersion from "./DefVersion.vue";
 import { Message } from "@arco-design/web-vue";
 
 const loading = ref(false);
@@ -275,9 +289,6 @@ const handleSaveFlowDesign = async () => {
   }
 };
 
-const handleAppEditCancel = () => {
-  defEditVisible.value = false;
-};
 
 // 适用组织
 const defOrgRef = ref();
@@ -293,6 +304,19 @@ const handleDefOrgOk = () => {
   defOrgVisible.value = false;
 };
 
+// 流程版本
+const defVersionRef = ref();
+const defVersionVisible = ref(false);
+const editDefVersion = (record) => {
+  defVersionVisible.value = true;
+  nextTick(() => {
+    defVersionRef.value.init(record.procDefKey);
+  });
+
+};
+const handleDefVersionOk = () => {
+  defVersionVisible.value = false;
+};
 // 测试启动流程
 const handleTestStart = async (record) => {
   try {
