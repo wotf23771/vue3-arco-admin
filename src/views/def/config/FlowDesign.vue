@@ -117,14 +117,14 @@ const init = async (record) => {
     }
   }
 
- 
+
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
 };
 
 const initByProcDefVersion = async (record) => {
-  
+
   let flowDef = {
     workFlowDef: { name: null, icon: "approval", flowAdminIds: ["admin"], cancelable: 1 },
     nodeConfig: { name: "发起", type: 0 },
@@ -139,7 +139,7 @@ const initByProcDefVersion = async (record) => {
     }
   }
 
- 
+
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
@@ -163,7 +163,7 @@ const handleSubmit = async () => {
     }
     Message.success("更新成功");
     emits("success");
-    return true;
+    return false;
   } catch (err) {
     console.log("err", err);
     return false;

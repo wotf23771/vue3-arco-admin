@@ -1,3 +1,4 @@
+<!-- 设置审批人 -->
 <template>
   <a-drawer
       v-if="visible"
@@ -44,7 +45,7 @@
                 <div class="approver-list">
                   <div class="approver-wrapper" v-for="(item, idx) in flowNodeConfig.assignees">
                     <div class="header">
-                      <span>审批人{{ idx + 1 }}</span>
+                      <span>审批人</span>
                       <icon-delete :style="{ fontSize: '18px' }" @click="delApprover(item)" v-if="flowNodeConfig.assignees.length > 1" />
                     </div>
                     <div class="main-content">
@@ -143,7 +144,7 @@
                             <icon-plus />
                           </a-button>
                           <span class="assignee-list">
-                            <a-tag v-for="userId in item.assignees">{{ getUserById(userId).name }}</a-tag>
+                            <a-tag v-for="userId in item.assignees">{{ userId.name }}</a-tag>
                           </span>
                           <OrganChooseBox
                               v-if="showChooseAssignee"
@@ -206,15 +207,15 @@
                   </div>
                 </div>
 
-                <!-- 添加审核人按钮 -->
-                <div class="add-operator">
-                  <a-link @click="addApprover()" v-if="!onlyOneNode">
-                    <template #icon>
-                      <icon-plus />
-                    </template>
-                    添加审批人
-                  </a-link>
-                </div>
+                <!--                &lt;!&ndash; 添加审核人按钮 &ndash;&gt;-->
+                <!--                <div class="add-operator">-->
+                <!--                  <a-link @click="addApprover()" v-if="!onlyOneNode">-->
+                <!--                    <template #icon>-->
+                <!--                      <icon-plus />-->
+                <!--                    </template>-->
+                <!--                    添加审批人-->
+                <!--                  </a-link>-->
+                <!--                </div>-->
               </div>
 
               <!-- 会签、或签、序签 -->
@@ -272,12 +273,12 @@
                       <a-grid-item>
                         <a-radio :value="1">自动跳过</a-radio>
                       </a-grid-item>
-                      <a-grid-item>
-                        <a-radio :value="2">转交给直接上级审批</a-radio>
-                      </a-grid-item>
-                      <a-grid-item>
-                        <a-radio :value="3">转交给部门负责人审批</a-radio>
-                      </a-grid-item>
+                      <!--                      <a-grid-item>-->
+                      <!--                        <a-radio :value="2">转交给直接上级审批</a-radio>-->
+                      <!--                      </a-grid-item>-->
+                      <!--                      <a-grid-item>-->
+                      <!--                        <a-radio :value="3">转交给部门负责人审批</a-radio>-->
+                      <!--                      </a-grid-item>-->
                     </a-grid>
                   </a-radio-group>
                 </div>

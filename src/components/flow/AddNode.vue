@@ -19,10 +19,10 @@
               <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.COPY].icon"></span></div>
               <div class="node-text">抄送人</div>
             </div>
-            <div class="add-node-popover-item transactor" @click="onNodeAddClicked(NODE.TRANSACT)">
-              <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.TRANSACT].icon"></span></div>
-              <div class="node-text">办理人</div>
-            </div>
+            <!--            <div class="add-node-popover-item transactor" @click="onNodeAddClicked(NODE.TRANSACT)">-->
+            <!--              <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.TRANSACT].icon"></span></div>-->
+            <!--              <div class="node-text">办理人</div>-->
+            <!--            </div>-->
             <div class="add-node-popover-item condition" @click="onNodeAddClicked(NODE.EXCLUSIVE_GATEWANY)">
               <div class="node-icon"><span class="iconfont-approval-admin" v-html="icons[NODE.EXCLUSIVE_GATEWANY].icon"></span>
               </div>

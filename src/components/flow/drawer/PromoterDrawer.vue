@@ -1,3 +1,4 @@
+<!-- 设置发起人 -->
 <template>
   <a-drawer
       :append-to-body="true"
@@ -30,7 +31,7 @@
             <template v-if="flowPermission.type == 1">
               <div class="selected-content">
                 <div class="selected-list">
-                  <a-tag v-for="item in selected">{{ getById(item.id).name }}</a-tag>
+                  <a-tag v-for="item in selected">{{ item.name }}</a-tag>
                 </div>
                 <div class="btn" @click="openInitiatorChooseBox()">
                   <a-link>

@@ -1,38 +1,65 @@
 <template>
-  <a-modal v-if="isOpened" v-model:visible="isOpened" @ok="onOkClicked()" @cancel="onCancelClicked()" titleAlign="start" :width="890">
+  <a-modal v-if="isOpened" v-model:visible="isOpened" @ok="onOkClicked()" @cancel="onCancelClicked()" titleAlign="start" :width="890" draggable>
     <template #title> 请选择组织成员</template>
     <div class="organ-content-wrap">
       <div class="visibility-picker-left">
-        <a-tabs position="top" @change="onTabChange" :activeKey="type">
+        <a-tabs position="top" @change="onTabChange" :activeKey="type" :hide-content="true">
           <a-tab-pane v-for="organ in organTypes" :key="organ.code" :title="organ.desc"></a-tab-pane>
         </a-tabs>
-        <a-input long v-model:model-value="keyword" placeholder="输入名称" allow-clear :max-length="16">
-          <template #prefix>
-            <icon-search :size="18" />
-          </template>
-        </a-input>
+        <!--        <a-input long v-model:model-value="keyword" placeholder="输入名称" allow-clear :max-length="16">-->
+        <!--          <template #prefix>-->
+        <!--            <icon-search :size="18" />-->
+        <!--          </template>-->
+        <!--        </a-input>-->
         <div class="picker-type-content">
           <template v-if="type == ORGANS.DEPT.code">
             <a-checkbox v-for="i in filteredItem(depts)" :value="i.id" :model-value="i.checked" @change="onItemChoosed($event, i, type)">
               {{ i.name }}
             </a-checkbox>
+            <a-tree
+                blockNode
+                :field-names="{title:'name'}"
+                :data="deptData"
+                :load-more="loadMoreDeptData"
+            >
+              <template #extra="nodeData">
+                <IconPlus v-if="nodeData.type==2"
+                          style="position: absolute; right: 8px; font-size: 12px; top: 10px; color: #3370ff;"
+                          @click="() => handleSelectDept(nodeData)"
+                />
+              </template>
+            </a-tree>
           </template>
-          <template v-else-if="type == ORGANS.ROLE.code">
-            <a-checkbox v-for="i in filteredItem(roles)" :value="i.id" :model-value="i.checked" @change="onItemChoosed($event, i, type)">
-              {{ i.name }}
-            </a-checkbox>
-          </template>
+          <!--          <template v-else-if="type == ORGANS.ROLE.code">-->
+          <!--            请选择角色-->
+          <!--            <a-checkbox v-for="i in filteredItem(roles)" :value="i.id" :model-value="i.checked" @change="onItemChoosed($event, i, type)">-->
+          <!--              {{ i.name }}-->
+          <!--            </a-checkbox>-->
+          <!--          </template>-->
           <template v-else-if="type == ORGANS.USER.code">
             <a-checkbox v-for="i in filteredItem(users)" :value="i.id" :model-value="i.checked" @change="onItemChoosed($event, i, type)">
               {{ i.name }}
             </a-checkbox>
+            <a-tree
+                blockNode
+                :field-names="{title:'name'}"
+                :data="userData"
+                :load-more="loadMoreUserData"
+            >
+              <template #extra="nodeData">
+                <IconPlus v-if="nodeData.type==4"
+                          style="position: absolute; right: 8px; font-size: 12px; top: 10px; color: #3370ff;"
+                          @click="() => handleSelectUser(nodeData)"
+                />
+              </template>
+            </a-tree>
           </template>
         </div>
       </div>
       <div class="visibility-picker-right">
         <div class="choosed-items-box">
           <div class="item-select" v-for="item in selected0">
-            <div class="text">{{ getNameById(item) }}</div>
+            <div class="text">{{ item.name }}</div>
             <div class="deleted">
               <a-link @click="onItemRemoved(item)">
                 <template #icon>
@@ -48,16 +75,18 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeMount, ref, watch } from "vue";
 import { useOrganStore } from "@/store";
 import ObjectUtil from "../common/ObjectUtil";
 import ArrayUtil from "../common/ArrayUtil";
-import { IconClose, IconSearch } from "@arco-design/web-vue/es/icon";
+import { IconClose } from "@arco-design/web-vue/es/icon";
+import { loadDeptTreeChildNode, loadUserTreeChildNode } from "@/api/orgQueryApi";
+import { Message } from "@arco-design/web-vue";
 
 let props = defineProps({
   visible: { type: Boolean, default: false },
   hiddenDept: { type: Boolean, default: false },
-  hiddenRole: { type: Boolean, default: false },
+  // hiddenRole: { type: Boolean, default: false },
   hiddenUser: { type: Boolean, default: false },
   selected: { type: Array, default: () => [] },
   onlyId: { type: Boolean, default: true }, // 选择的值是否是id数组，如果不是则为{id:xx,type:xx}的对象
@@ -66,7 +95,7 @@ let emits = defineEmits(["update:visible", "update:selected"]);
 
 const ORGANS = {
   DEPT: { code: 0, desc: "部门" },
-  ROLE: { code: 1, desc: "角色" },
+  // ROLE: { code: 1, desc: "角色" },
   USER: { code: 2, desc: "用户" },
 };
 
@@ -82,7 +111,7 @@ let type = ref(0); // 选择的标签，部门，角色还是用户
 let organTypes = computed(() => {
   let tmpOrgans = [];
   if (!props.hiddenDept) tmpOrgans.push(ORGANS.DEPT);
-  if (!props.hiddenRole) tmpOrgans.push(ORGANS.ROLE);
+  // if (!props.hiddenRole) tmpOrgans.push(ORGANS.ROLE);
   if (!props.hiddenUser) tmpOrgans.push(ORGANS.USER);
   return tmpOrgans;
 });
@@ -110,19 +139,25 @@ const initSelected = () => {
 
   // 设置左侧选中
   if (!props.hiddenDept) {
-    depts.value = getDepts();
-    all.value.push(...depts.value);
-    depts.value.forEach((i) => (i.checked = ids.includes(i.id)));
+    // depts.value = getDepts();
+    // all.value.push(...depts.value);
+    // depts.value.forEach((i) => (i.checked = ids.includes(i.id)));
+    nextTick(() => {
+      loadDeptData();
+    });
   }
-  if (!props.hiddenRole) {
-    roles.value = getRoles();
-    all.value.push(...roles.value);
-    roles.value.forEach((i) => (i.checked = ids.includes(i.id)));
-  }
+  // if (!props.hiddenRole) {
+  //   roles.value = getRoles();
+  //   all.value.push(...roles.value);
+  //   roles.value.forEach((i) => (i.checked = ids.includes(i.id)));
+  // }
   if (!props.hiddenUser) {
-    users.value = getUsers();
-    all.value.push(...users.value);
-    users.value.forEach((i) => (i.checked = ids.includes(i.id)));
+    // users.value = getUsers();
+    // all.value.push(...users.value);
+    // users.value.forEach((i) => (i.checked = ids.includes(i.id)));
+    nextTick(() => {
+      loadUserData();
+    });
   }
 };
 
@@ -186,11 +221,11 @@ const onItemRemoved = (item) => {
       if (i.id == id) i.checked = false;
     });
   }
-  if (!props.hiddenRole) {
-    roles.value.forEach((i) => {
-      if (i.id == id) i.checked = false;
-    });
-  }
+  // if (!props.hiddenRole) {
+  //   roles.value.forEach((i) => {
+  //     if (i.id == id) i.checked = false;
+  //   });
+  // }
   if (!props.hiddenUser) {
     users.value.forEach((i) => {
       if (i.id == id) i.checked = false;
@@ -210,6 +245,61 @@ const onCancelClicked = () => {
 
 onBeforeMount(() => {
 });
+
+// 以下为自定义内容
+
+// 部门树
+const deptData = ref([]);
+const loadDeptData = async () => {
+  const { data } = await loadDeptTreeChildNode("");
+  if (data) {
+    data.forEach(d => {
+      d.path = d.name;
+    });
+  }
+  deptData.value = data;
+};
+const loadMoreDeptData = (node) => {
+  return new Promise(async (resolve) => {
+    const { data } = await loadDeptTreeChildNode(node.id);
+    if (data) {
+      data.forEach(d => {
+        d.path = node.path + "/" + d.name;
+      });
+    }
+    node.children = data;
+    resolve();
+  });
+};
+const handleSelectDept = (node) => {
+  const count = selected0.value.filter((i) => i.id == node.id).length;
+  if (count == 0) {
+    selected0.value.push({ id: node.id, name: node.path, type: node.type });
+  } else {
+    Message.warning("已添加，请勿重复操作");
+  }
+};
+// 用户树
+const userData = ref([]);
+const loadUserData = async () => {
+  const { data } = await loadUserTreeChildNode("");
+  userData.value = data;
+};
+const loadMoreUserData = (node) => {
+  return new Promise(async (resolve) => {
+    const { data } = await loadUserTreeChildNode(node.id);
+    node.children = data;
+    resolve();
+  });
+};
+const handleSelectUser = (node) => {
+  const count = selected0.value.filter((i) => i.id == node.id).length;
+  if (count == 0) {
+    selected0.value.push({ id: node.id, name: node.name, type: node.type });
+  } else {
+    Message.warning("已添加，请勿重复操作");
+  }
+};
 </script>
 
 <style lang="less">
@@ -233,7 +323,7 @@ onBeforeMount(() => {
 
     .picker-type-content {
       margin-top: 10px;
-      height: calc(100% - 110px);
+      height: calc(100% - 60px);
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -252,9 +342,9 @@ onBeforeMount(() => {
       display: flex;
       flex-direction: row;
       justify-content: center;
-      height: 32px;
+      //height: 32px;
       align-items: center;
-      padding: 0 8px 0 16px;
+      padding: 5px 8px 5px 16px;
       user-select: none;
       border-radius: 4px;
 

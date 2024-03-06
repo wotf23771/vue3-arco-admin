@@ -199,7 +199,7 @@ let showNodeContent = computed(() => {
     let { type, flowInitiators } = props.flowPermission;
     if (type == 0) return "全员可提交";
     else if (type == 2) return "均不可提交";
-    else return flowInitiators?.map((i) => getById(i.id).name).join(", ");
+    else return flowInitiators?.map((i) => i.name).join(", ");
   } else if (nodeType == NODE.APPROVE) {
     // 审批人节点
     let { assignees, approvalType } = props.nodeConfig;
@@ -219,7 +219,7 @@ let showNodeContent = computed(() => {
             } else if (assigneeType == 3) {
               return roles?.map((roleId) => ArrayUtil.get(allRoles, "id", roleId).name).join(", ");
             } else if (assigneeType == 4) {
-              return assignees?.map((userId) => ArrayUtil.get(allUsers, "id", userId).name).join(", ");
+              return assignees?.map((user) => user.name).join(", ");
             } else if (assigneeType == 5) {
               return "连续多级上级";
             } else if (assigneeType == 6) {
