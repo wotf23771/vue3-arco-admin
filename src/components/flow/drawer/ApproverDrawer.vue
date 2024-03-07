@@ -114,8 +114,8 @@
                       <!-- 审批人规则 -->
                       <template v-if="item.assigneeType == 11">
                         <p class="bold">选择审批人规则</p>
-                        <a-select placeholder="请选择" v-model="item.ruleClazz" allow-clear>
-                          <a-option v-for="rule in ruleList" :value="rule.clazz" :label="rule.name"></a-option>
+                        <a-select placeholder="请选择" v-model="item.ruleId" allow-clear>
+                          <a-option v-for="rule in ruleList" :value="rule.id" :label="rule.name"></a-option>
                         </a-select>
                       </template>
                     </div>
@@ -281,9 +281,9 @@ const onAssigneeTypeChanged = (assignee) => {
   let { assigneeType } = assignee;
   if ([11].includes(assigneeType)) {
     // 加载审批人规则
-    ruleList.value = [{ code: "a", name: "自定义规则1" }, { code: "b", name: "自定义规则2" }];
+    ruleList.value = [{ id: "a", name: "自定义规则1" }, { id: "b", name: "自定义规则2" }];
   } else {
-    delete assignee.ruleClazz;
+    delete assignee.ruleId;
   }
   if (assigneeType == 0) {
     flowNodeConfig.value.multiInstanceApprovalType = 0;
