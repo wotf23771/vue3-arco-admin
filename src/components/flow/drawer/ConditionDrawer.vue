@@ -47,7 +47,7 @@
                 <div class="value-select">
                   <div class="content" placeholder="选择">
                     <template v-if="ArrayUtil.isArray(condition.val)">
-                      <div class="item-tag" v-for="i in condition.val">{{ getById(i).name }}</div>
+                      <div class="item-tag" v-for="user in condition.val">{{ user.name }}</div>
                     </template>
                   </div>
                   <div class="btn" @click="onOpenOrganChooseBox(condition)">
