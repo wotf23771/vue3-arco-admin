@@ -175,7 +175,28 @@
         <div class="item-content-auth" v-else-if="viewEditorType == 1">
           <div class="content-wrap">
             <div class="item-content">
-              配置表单
+              <a-form class="item-form">
+                <a-form-item field="toDoUrl" label="待办表单">
+                  <a-select v-model="flowNodeConfig.toDoUrl" placeholder="请选择待办表单" allow-clear>
+                    <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item field="toDoUrl" label="已办表单">
+                  <a-select v-model="flowNodeConfig.haveDoUrl" placeholder="请选择已办表单" allow-clear>
+                    <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item field="toDoUrl" label="待阅表单">
+                  <a-select v-model="flowNodeConfig.toReadUrl" placeholder="请选择待阅表单" allow-clear>
+                    <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item field="toDoUrl" label="已阅表单">
+                  <a-select v-model="flowNodeConfig.haveReadUrl" placeholder="请选择已阅表单" allow-clear>
+                    <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
+                  </a-select>
+                </a-form-item>
+              </a-form>
             </div>
           </div>
         </div>
@@ -198,7 +219,11 @@
         <div class="item-content-auth" v-else-if="viewEditorType == 3">
           <div class="content-wrap">
             <div class="item-content">
-              配置事件
+              <div class="item-wrap auth-list">
+                <a-checkbox-group direction="vertical" v-model="flowNodeConfig.events" class="auth-item">
+                  <a-checkbox v-for="(item, index) in eventList" :key="index" :value="item.id">{{ item.name }}</a-checkbox>
+                </a-checkbox-group>
+              </div>
             </div>
           </div>
         </div>
@@ -207,7 +232,32 @@
         <div class="item-content-auth" v-else-if="viewEditorType == 4">
           <div class="content-wrap">
             <div class="item-content">
-              配置参数
+              <div class="item-table-header">
+                <a-button size="small" type="primary" @click="handleAddParam">
+                  <template #icon>
+                    <icon-plus />
+                  </template>
+                  新增
+                </a-button>
+              </div>
+              <a-table :columns="propertyColumns" :data="flowNodeConfig.extParams" :pagination="false">
+                <template #index="{ rowIndex }">
+                  {{ rowIndex + 1 }}
+                </template>
+                <template #name="{ rowIndex }">
+                  <a-input v-model="flowNodeConfig.extParams[rowIndex].name" placeholder="请输入参数名" />
+                </template>
+                <template #value="{ rowIndex }">
+                  <a-input v-model="flowNodeConfig.extParams[rowIndex].value" placeholder="请输入参数值" />
+                </template>
+                <template #operator="{ rowIndex }">
+                  <a-button size="small" type="text" status="danger" title="删除" @click="handleDeleteParam(rowIndex)">
+                    <template #icon>
+                      <icon-delete />
+                    </template>
+                  </a-button>
+                </template>
+              </a-table>
             </div>
           </div>
         </div>
@@ -217,11 +267,11 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onMounted, ref, toRaw, watch } from "vue";
-import { useFlowStore } from "@/store/index";
-import OrganChooseBox from "../dialog/OrganChooseBox.vue";
-import { IconPlus } from "@arco-design/web-vue/es/icon";
-import EditableText from "@/components/common/EditableText.vue";
+import { computed, onBeforeMount, onMounted, ref, toRaw, watch } from 'vue';
+import { useFlowStore } from '@/store/index';
+import OrganChooseBox from '../dialog/OrganChooseBox.vue';
+import { IconPlus } from '@arco-design/web-vue/es/icon';
+import EditableText from '@/components/common/EditableText.vue';
 
 let flowStore = useFlowStore();
 let { showApproverDrawer, setApproverConfig } = flowStore;
@@ -249,8 +299,55 @@ let flowNodeConfig = ref({
   // ],
 });
 
+// 表单配置列表
+const formUrlList = ref([]);
+
 // 审批人规则
 const ruleList = ref([]);
+
+// 事件列表
+const eventList = ref([]);
+
+// 参数列
+const propertyColumns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    fixed: 'left',
+    width: 60,
+    slotName: 'index'
+  },
+  {
+    title: '参数名',
+    dataIndex: 'name',
+    slotName: 'name'
+  },
+  {
+    title: '参数值',
+    dataIndex: 'value',
+    slotName: 'value'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operator',
+    fixed: 'right',
+    width: 60,
+    slotName: 'operator'
+  }
+];
+const handleAddParam = () => {
+  if (!flowNodeConfig.value.extParams) {
+    flowNodeConfig.value.extParams = [];
+  }
+  flowNodeConfig.value.extParams.push({
+    name: '',
+    value: ''
+  });
+};
+
+const handleDeleteParam = (index) => {
+  flowNodeConfig.value.extParams.splice(index, 1);
+};
 
 // 审批人选择【指定成员】
 let showChooseAssignee4 = ref(false); // 是否显示指定成员对话框
@@ -272,16 +369,30 @@ watch(approverConfig0, (val) => {
   flowNodeConfig.value = val.value;
   viewEditorType.value = 0;
   _uid = val.id;
+
+  // 加载表单配置列表
+  formUrlList.value = [
+    { name: '表单1', url: 'form1' },
+    { name: '表单2', url: 'form2' },
+    { name: '表单3', url: 'form3' },
+  ];
+
+  // 加载事件列表
+  eventList.value = [
+    { id: 'a', name: '事件1' },
+    { id: 'b', name: '事件2' },
+    { id: 'c', name: '事件3' },
+  ];
 });
 
 // 审批人类型切换时
 const onAssigneeTypeChanged = (assignee) => {
-  console.log("审批人类型切换时", assignee);
+  console.log('审批人类型切换时', assignee);
   assignee.assignees = [];
   let { assigneeType } = assignee;
   if ([11].includes(assigneeType)) {
     // 加载审批人规则
-    ruleList.value = [{ id: "a", name: "自定义规则1" }, { id: "b", name: "自定义规则2" }];
+    ruleList.value = [{ id: 'a', name: '自定义规则1' }, { id: 'b', name: '自定义规则2' }];
   } else {
     delete assignee.ruleId;
   }
@@ -452,6 +563,14 @@ onMounted(() => {
 
   .item-content {
     margin-top: 8px;
+  }
+
+  .item-form {
+    margin-top: 8px;
+  }
+
+  .item-table-header {
+    margin-bottom: 4px;
   }
 }
 
