@@ -113,7 +113,7 @@ const init = async (record) => {
   const { success, data, message } = await getProcDef(id.value);
   if (success) {
     if (data && data.process) {
-      flowDef.nodeConfig = JSON.parse(data.process);
+      flowDef = JSON.parse(data.process);
     }
   }
 
@@ -134,7 +134,7 @@ const initByProcDefVersion = async (record) => {
   if (success) {
     if (data && data.process) {
       id.value = data.id;
-      flowDef.nodeConfig = JSON.parse(data.process);
+      flowDef = JSON.parse(data.process);
     }
   }
 
@@ -146,9 +146,9 @@ const initByProcDefVersion = async (record) => {
 const handleSubmit = async () => {
   try {
     loading.value = true;
-    let flowDef1 = JSON.stringify(toRaw(flowDefinition));
-    let flowDef = JSON.stringify(toRaw(flowDefinition.nodeConfig));
-    console.log(flowDef1);
+    let flowDef = JSON.stringify(toRaw(flowDefinition));
+ 
+  
     console.log(flowDef);
     // Message.success("更新成功");
     // emits("success");
@@ -162,7 +162,7 @@ const handleSubmit = async () => {
     }
     Message.success("更新成功");
     emits("success");
-    return false;
+    return true;
   } catch (err) {
     console.log("err", err);
     return false;

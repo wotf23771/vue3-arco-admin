@@ -86,7 +86,7 @@
                 </a-popconfirm>
                 
                 <!-- <a-link :hoverable="false" @click="editData(record)" >关联表单</a-link> -->
-                <a-link :hoverable="false" @click="editDefOrg(record)">适用组织</a-link>
+                <!-- <a-link :hoverable="false" @click="editDefOrg(record)">适用组织</a-link> -->
               </a-space>
             </template>
           </a-table-column>
