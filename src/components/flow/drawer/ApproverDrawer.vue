@@ -174,8 +174,8 @@
         <!-- 表单 -->
         <div class="item-content-auth" v-else-if="viewEditorType == 1">
           <div class="content-wrap">
-            <div class="item-content">
-              <a-form class="item-form">
+            <div class="item-content" style="padding-top: 1px;">
+              <a-form class="item-form" :label-col-props="{span:4}" :wrapper-col-props="{span:18}">
                 <a-form-item field="toDoUrl" label="待办表单">
                   <a-select v-model="flowNodeConfig.formConfig.toDoUrl" placeholder="请选择待办表单" allow-clear>
                     <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
@@ -233,12 +233,7 @@
           <div class="content-wrap">
             <div class="item-content">
               <div class="item-table-header">
-                <a-button size="small" type="primary" @click="handleAddParam">
-                  <template #icon>
-                    <icon-plus />
-                  </template>
-                  新增
-                </a-button>
+                <a-button size="small" type="primary" @click="handleAddParam">增加</a-button>
               </div>
               <a-table :columns="propertyColumns" :data="flowNodeConfig.extParams" :pagination="false">
                 <template #index="{ rowIndex }">
@@ -288,7 +283,12 @@ let flowNodeConfig = ref({
   // type: 1,
   // approvalType: 0,
   multiInstanceApprovalType: 0,
-  formConfig: {},
+  formConfig: {
+    toDoUrl: "",
+    haveDoUrl: "",
+    toReadUrl: "",
+    haveReadUrl: "",
+  },
   extParams: [],
 });
 
@@ -303,30 +303,10 @@ const eventList = ref([]);
 
 // 参数列
 const propertyColumns = [
-  {
-    title: "序号",
-    dataIndex: "index",
-    fixed: "left",
-    width: 60,
-    slotName: "index",
-  },
-  {
-    title: "参数名",
-    dataIndex: "name",
-    slotName: "name",
-  },
-  {
-    title: "参数值",
-    dataIndex: "value",
-    slotName: "value",
-  },
-  {
-    title: "操作",
-    dataIndex: "operator",
-    fixed: "right",
-    width: 60,
-    slotName: "operator",
-  },
+  { title: "序号", dataIndex: "index", align: "center", fixed: "left", width: 60, slotName: "index" },
+  { title: "参数名", dataIndex: "name", slotName: "name" },
+  { title: "参数值", dataIndex: "value", slotName: "value" },
+  { title: "操作", dataIndex: "operator", fixed: "right", width: 60, slotName: "operator" },
 ];
 const handleAddParam = () => {
   if (!flowNodeConfig.value.extParams) {
@@ -377,9 +357,9 @@ watch(approverConfig0, (val) => {
 
   // 加载事件列表
   eventList.value = [
-    { id: "a", name: "事件1" },
-    { id: "b", name: "事件2" },
-    { id: "c", name: "事件3" },
+    { id: "event1", name: "事件1" },
+    { id: "event2", name: "事件2" },
+    { id: "event3", name: "事件3" },
   ];
 });
 
