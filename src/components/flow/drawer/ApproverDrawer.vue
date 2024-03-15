@@ -177,22 +177,22 @@
             <div class="item-content">
               <a-form class="item-form">
                 <a-form-item field="toDoUrl" label="待办表单">
-                  <a-select v-model="flowNodeConfig.toDoUrl" placeholder="请选择待办表单" allow-clear>
+                  <a-select v-model="flowNodeConfig.formConfig.toDoUrl" placeholder="请选择待办表单" allow-clear>
                     <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
                   </a-select>
                 </a-form-item>
                 <a-form-item field="toDoUrl" label="已办表单">
-                  <a-select v-model="flowNodeConfig.haveDoUrl" placeholder="请选择已办表单" allow-clear>
+                  <a-select v-model="flowNodeConfig.formConfig.haveDoUrl" placeholder="请选择已办表单" allow-clear>
                     <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
                   </a-select>
                 </a-form-item>
                 <a-form-item field="toDoUrl" label="待阅表单">
-                  <a-select v-model="flowNodeConfig.toReadUrl" placeholder="请选择待阅表单" allow-clear>
+                  <a-select v-model="flowNodeConfig.formConfig.toReadUrl" placeholder="请选择待阅表单" allow-clear>
                     <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
                   </a-select>
                 </a-form-item>
                 <a-form-item field="toDoUrl" label="已阅表单">
-                  <a-select v-model="flowNodeConfig.haveReadUrl" placeholder="请选择已阅表单" allow-clear>
+                  <a-select v-model="flowNodeConfig.formConfig.haveReadUrl" placeholder="请选择已阅表单" allow-clear>
                     <a-option v-for="(item, index) in formUrlList" :key="index" :value="item.url">{{ item.name }}</a-option>
                   </a-select>
                 </a-form-item>
@@ -267,11 +267,11 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, onMounted, ref, toRaw, watch } from 'vue';
-import { useFlowStore } from '@/store/index';
-import OrganChooseBox from '../dialog/OrganChooseBox.vue';
-import { IconPlus } from '@arco-design/web-vue/es/icon';
-import EditableText from '@/components/common/EditableText.vue';
+import { computed, ref, toRaw, watch } from "vue";
+import { useFlowStore } from "@/store/index";
+import OrganChooseBox from "../dialog/OrganChooseBox.vue";
+import { IconPlus } from "@arco-design/web-vue/es/icon";
+import EditableText from "@/components/common/EditableText.vue";
 
 let flowStore = useFlowStore();
 let { showApproverDrawer, setApproverConfig } = flowStore;
@@ -288,15 +288,8 @@ let flowNodeConfig = ref({
   // type: 1,
   // approvalType: 0,
   multiInstanceApprovalType: 0,
-  // flowNodeNoAuditorType: 0,
-  // flowNodeSelfAuditorType: 0,
-  // assignees: [
-  // {
-  //   id: Snowflake.generate(),
-  //   assigneeType: 0,
-  //   layerType: 0,
-  // },
-  // ],
+  formConfig: {},
+  extParams: [],
 });
 
 // 表单配置列表
@@ -311,37 +304,37 @@ const eventList = ref([]);
 // 参数列
 const propertyColumns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    fixed: 'left',
+    title: "序号",
+    dataIndex: "index",
+    fixed: "left",
     width: 60,
-    slotName: 'index'
+    slotName: "index",
   },
   {
-    title: '参数名',
-    dataIndex: 'name',
-    slotName: 'name'
+    title: "参数名",
+    dataIndex: "name",
+    slotName: "name",
   },
   {
-    title: '参数值',
-    dataIndex: 'value',
-    slotName: 'value'
+    title: "参数值",
+    dataIndex: "value",
+    slotName: "value",
   },
   {
-    title: '操作',
-    dataIndex: 'operator',
-    fixed: 'right',
+    title: "操作",
+    dataIndex: "operator",
+    fixed: "right",
     width: 60,
-    slotName: 'operator'
-  }
+    slotName: "operator",
+  },
 ];
 const handleAddParam = () => {
   if (!flowNodeConfig.value.extParams) {
     flowNodeConfig.value.extParams = [];
   }
   flowNodeConfig.value.extParams.push({
-    name: '',
-    value: ''
+    name: "",
+    value: "",
   });
 };
 
@@ -367,32 +360,37 @@ const onAssignee2Click = (item) => {
 
 watch(approverConfig0, (val) => {
   flowNodeConfig.value = val.value;
+
+  if (!flowNodeConfig.value.formConfig) {
+    flowNodeConfig.value.formConfig = {};
+  }
+
   viewEditorType.value = 0;
   _uid = val.id;
 
   // 加载表单配置列表
   formUrlList.value = [
-    { name: '表单1', url: 'form1' },
-    { name: '表单2', url: 'form2' },
-    { name: '表单3', url: 'form3' },
+    { name: "表单1", url: "form1" },
+    { name: "表单2", url: "form2" },
+    { name: "表单3", url: "form3" },
   ];
 
   // 加载事件列表
   eventList.value = [
-    { id: 'a', name: '事件1' },
-    { id: 'b', name: '事件2' },
-    { id: 'c', name: '事件3' },
+    { id: "a", name: "事件1" },
+    { id: "b", name: "事件2" },
+    { id: "c", name: "事件3" },
   ];
 });
 
 // 审批人类型切换时
 const onAssigneeTypeChanged = (assignee) => {
-  console.log('审批人类型切换时', assignee);
+  console.log("审批人类型切换时", assignee);
   assignee.assignees = [];
   let { assigneeType } = assignee;
   if ([11].includes(assigneeType)) {
     // 加载审批人规则
-    ruleList.value = [{ id: 'a', name: '自定义规则1' }, { id: 'b', name: '自定义规则2' }];
+    ruleList.value = [{ id: "a", name: "自定义规则1" }, { id: "b", name: "自定义规则2" }];
   } else {
     delete assignee.ruleId;
   }
@@ -421,157 +419,8 @@ const saveApprover = (leave = true) => {
 const close = () => {
   showApproverDrawer(false);
 };
-
-onBeforeMount(() => {
-});
-onMounted(() => {
-});
 </script>
 
-<style lang="less">
-.approver-drawer__content {
-  user-select: none;
-
-  .approval-editor-tab-wrapper {
-    margin-top: 24px;
-
-    .item-content-editor,
-    .item-content-auth {
-      margin-top: 8px;
-
-      .approver-list {
-        .approver-wrapper {
-          border: 1px solid #e4e5e7;
-          border-radius: 6px;
-          overflow: hidden;
-
-          + .approver-wrapper {
-            margin-top: 6px;
-          }
-
-          .header {
-            padding: 0 16px;
-            background: #f5f6f7;
-            height: 36px;
-            line-height: 36px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            span {
-              color: #1f2329;
-              font-weight: 600;
-            }
-
-            .arco-icon {
-              cursor: pointer;
-
-              &:hover {
-                color: #3370ff;
-              }
-            }
-          }
-
-          .sub-content {
-            padding: 0 16px 10px;
-
-            .sub-content-top-line {
-              border-top: 1px solid #dee0e3;
-            }
-
-            p {
-              padding-top: 10px;
-              color: #1f2329;
-              font-size: 14px;
-              font-weight: 600;
-              margin-bottom: 8px;
-
-              span {
-                color: #8f959e;
-                font-weight: 400;
-                font-size: 13px;
-              }
-            }
-
-            .arco-form-item {
-              margin-bottom: 0;
-            }
-
-            .assignee-box {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-
-              .assignee-list {
-                flex: 1;
-                margin-left: 10px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-
-                .arco-tag {
-                  height: 28px;
-                }
-              }
-            }
-          }
-
-          .radio-group {
-            padding: 10px 16px;
-            width: 100%;
-
-            .arco-radio {
-              margin-right: 2px;
-            }
-          }
-        }
-      }
-
-      .item-wrap {
-        + .item-wrap {
-          margin-top: 24px;
-        }
-      }
-
-      .auth-list {
-        display: flex;
-        flex-direction: column;
-
-        .auth-item {
-          margin-top: 10px;
-        }
-      }
-
-    }
-  }
-
-  .arco-radio-group-button {
-    width: 100%;
-
-    .arco-radio-button {
-      flex: 1;
-      text-align: center;
-    }
-  }
-
-  .item-key-wrapper {
-    .item-key {
-      color: #1f2329;
-      font-weight: 600;
-    }
-  }
-
-  .item-content {
-    margin-top: 8px;
-  }
-
-  .item-form {
-    margin-top: 8px;
-  }
-
-  .item-table-header {
-    margin-bottom: 4px;
-  }
-}
-
+<style lang="less" scoped>
+@import './ApproverDrawer.less';
 </style>

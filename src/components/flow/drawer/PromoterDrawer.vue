@@ -104,43 +104,6 @@ const closeDrawer = () => {
 };
 </script>
 
-<style lang="less">
-.approval-editor-tab-wrapper {
-  user-select: none;
-  margin-bottom: 24px;
-
-  .arco-radio-group-button {
-    width: 100%;
-
-    .arco-radio-button {
-      flex: 1;
-      text-align: center;
-    }
-  }
-}
-
-.approval-editor-content {
-  .item-content-editor {
-    user-select: none;
-    margin-top: 0;
-
-    .type-content {
-      margin-top: 8px;
-    }
-
-    .selected-content {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-
-      .selected-list {
-        flex: 1;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-    }
-  }
-}
+<style lang="less" scoped>
+@import "./PromoterDrawer.less";
 </style>

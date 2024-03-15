@@ -69,9 +69,9 @@ const loadFlowData = (flowDefinition) => {
   const { nodeConfig: nodeConfig0, flowPermission: flowPermission0, workFlowDef: workFlowDef0, flowWidgets: flowWidgets0 } = flowDefinition;
   nodeConfig.value = nodeConfig0;
   flowPermission.value = flowPermission0;
-  workFlowDef.value = workFlowDef0;
+  // workFlowDef.value = workFlowDef0;
   flowWidgets.value = flowWidgets0;
-  flowStore.setFlowDefId(workFlowDef0.id);
+  // flowStore.setFlowDefId(workFlowDef0.id);
 };
 
 watch(flowPermission, () => {
@@ -116,7 +116,7 @@ const init = async (record) => {
       flowDef = JSON.parse(data.process);
     }
   }
-
+  console.log("flowDef", flowDef);
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
@@ -137,7 +137,6 @@ const initByProcDefVersion = async (record) => {
       flowDef = JSON.parse(data.process);
     }
   }
-
   flowStore.setFlowDef(flowDef);
   // flowStore.setFlowGroups(groups.value);
   loadFlowData(flowDef);
@@ -147,12 +146,10 @@ const handleSubmit = async () => {
   try {
     loading.value = true;
     let flowDef = JSON.stringify(toRaw(flowDefinition));
- 
-  
-    console.log(flowDef);
+    console.log("flowDef", flowDef);
     // Message.success("更新成功");
     // emits("success");
-    var form = {
+    let form = {
       process: flowDef,
     };
     const { code, success, message } = await updateProcDef(id.value, form);
@@ -174,135 +171,6 @@ const handleSubmit = async () => {
 defineExpose({ init, initByProcDefVersion, handleSubmit });
 </script>
 
-<style lang="less">
-// @canvas-bg: #f5f5f7;
-@canvas-bg: #f2f3f5;
-.fd-main {
-  position: fixed;
-  top: 50px;
-  left: 0;
-  right: 0;
-  bottom: 70px;
-  background-color: @canvas-bg;
-  overflow: hidden;
-
-  .fd-main-box {
-    height: 100%;
-    overflow-y: auto;
-  }
-}
-
-.flow-desgin {
-  height: 100%;
-  z-index: 1;
-  cursor: grab;
-}
-
-.flow-desgin-main {
-  width: 100%;
-  background-color: @canvas-bg;
-  user-select: none;
-
-  .zoom {
-    display: flex;
-    position: fixed;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    height: 40px;
-    width: 125px;
-    right: 40px;
-    margin-top: 30px;
-    z-index: 10;
-
-    .zoom-in,
-    .zoom-out {
-      width: 30px;
-      height: 30px;
-      background: #fff;
-      color: #c1c1cd;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      color: #111;
-      border-radius: 50%;
-      transition: all 0.5s ease;
-
-      &:hover {
-        // transform: scale(1.1);
-        box-shadow: 0 13px 27px 0 rgba(0, 0, 0, 0.1);
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        border-radius: 50%;
-        border: 1px solid transparent;
-        box-shadow: 0 2px 5px #0000001a;
-      }
-    }
-
-    .zoom-in.disabled,
-    .zoom-out.disabled {
-      opacity: 0.5;
-    }
-  }
-
-  .box-scale {
-    transform: scale(1);
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding: 54.5px 0;
-    -webkit-box-align: start;
-    -ms-flex-align: start;
-    align-items: flex-start;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    min-width: min-content;
-    transform-origin: 50% 0px 0px;
-  }
-
-  .end-node {
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 4px;
-      border-style: solid;
-      border-width: 8px 6px 4px;
-      border-color: #cacaca transparent transparent;
-    }
-
-    .title {
-      height: 28px;
-      border-radius: 8px 8px 0 0;
-      background: #a9b4cd;
-      padding: 0 12px;
-    }
-
-    .content {
-      color: #646a73;
-    }
-  }
-}
+<style lang="less" scoped>
+@import "./FlowDesign.less";
 </style>

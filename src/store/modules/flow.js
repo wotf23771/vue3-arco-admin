@@ -48,6 +48,7 @@ const useFlowStore = defineStore("flow", {
       this.isApproverDrawerOpened = isOpened;
     },
     setApproverConfig(approverConfig) {
+      console.log("setApproverConfig", approverConfig);
       this.approverConfig0 = approverConfig;
     },
 
