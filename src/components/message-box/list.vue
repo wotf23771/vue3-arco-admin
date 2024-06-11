@@ -18,8 +18,8 @@
         <a-list-item-meta>
           <template v-if="item.avatar" #avatar>
             <a-avatar shape="circle">
-              <img v-if="item.avatar" :src="item.avatar" />
-              <icon-desktop v-else />
+              <img v-if="item.avatar" :src="item.avatar"/>
+              <icon-desktop v-else/>
             </a-avatar>
           </template>
           <template #title>
@@ -57,10 +57,10 @@
           :class="{ 'add-border-top': renderList.length < showMax }"
       >
         <div class="footer-wrap">
-          <a-link @click="allRead">{{ $t("messageBox.allRead") }}</a-link>
+          <a-link @click="allRead">全部已读</a-link>
         </div>
         <div class="footer-wrap">
-          <a-link>{{ $t("messageBox.viewMore") }}</a-link>
+          <a-link>查看更多</a-link>
         </div>
       </a-space>
     </template>
@@ -72,8 +72,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from "vue";
-import { MessageRecord, MessageListType } from "@/api/message";
+import {PropType} from 'vue';
+import {MessageListType, MessageRecord} from '@/api/message';
 
 const props = defineProps({
   renderList: {
@@ -85,14 +85,14 @@ const props = defineProps({
     default: 0,
   },
 });
-const emit = defineEmits(["itemClick"]);
+const emit = defineEmits(['itemClick']);
 const allRead = () => {
-  emit("itemClick", [...props.renderList]);
+  emit('itemClick', [...props.renderList]);
 };
 
 const onItemClick = (item: MessageRecord) => {
   if (!item.status) {
-    emit("itemClick", [item]);
+    emit('itemClick', [item]);
   }
 };
 const showMax = 3;

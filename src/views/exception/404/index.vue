@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.exception', '404']" />
     <div class="content">
       <a-result
           class="result"
@@ -9,16 +8,20 @@
       >
       </a-result>
       <div class="operation-row">
-        <a-button key="again" style="margin-right: 16px">重试</a-button>
-        <a-button key="back" type="primary">返回</a-button>
+        <a-button v-if="false" key="again" style="margin-right: 16px">
+          重试
+        </a-button>
+        <a-button @click="() => $router.back()" key="back" type="primary">
+          返回
+        </a-button>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script setup></script>
 
-<script lang="ts">
+<script>
 export default {
   name: "404",
 };

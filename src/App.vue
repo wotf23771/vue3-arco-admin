@@ -1,14 +1,9 @@
 <template>
   <a-config-provider>
-    <router-view />
-    <global-setting />
+    <router-view/>
   </a-config-provider>
 </template>
 
 <script lang="ts" setup>
-import GlobalSetting from "@/components/global-setting/index.vue";
-import { useAppStore } from "@/store";
 
-const appStore = useAppStore();
-document.title = appStore.appTitle;
 </script>

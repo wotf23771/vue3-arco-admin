@@ -1,10 +1,7 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img
-        alt="logo"
-        src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
-      />
+      <img alt="logo" src="../../assets/logo.svg" style="height:50px;" />
       <div class="logo-text">{{ appTitle }}</div>
     </div>
     <LoginBanner />
@@ -19,8 +16,8 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import Footer from "@/components/footer/index.vue";
+<script setup>
+import Footer from "@/layout/default/footer/index.vue";
 import LoginBanner from "./components/banner.vue";
 import LoginForm from "./components/login-form.vue";
 import { useAppStore } from "@/store";

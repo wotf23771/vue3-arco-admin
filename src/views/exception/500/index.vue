@@ -1,20 +1,21 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.exception', '500']" />
     <div class="content">
       <a-result
           class="result"
           status="500"
           subtitle="抱歉，服务器出了点问题～"
       />
-      <a-button key="back" type="primary">返回</a-button>
+      <a-button key="back" type="primary">
+        返回
+      </a-button>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script setup></script>
 
-<script lang="ts">
+<script>
 export default {
   name: "500",
 };

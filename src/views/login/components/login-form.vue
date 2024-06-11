@@ -1,6 +1,7 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">登录</div>
+    <!--    <div class="login-form-sub-title">登录</div>-->
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
         ref="loginForm"
@@ -11,11 +12,14 @@
     >
       <a-form-item
           field="username"
-          :rules="[{ required: true, message: '用户名为空' }]"
+          :rules="[{ required: true, message: '用户名不能为空' }]"
           :validate-trigger="['change', 'blur']"
           hide-label
       >
-        <a-input v-model="userInfo.username" placeholder="请输入用户名">
+        <a-input
+            v-model="userInfo.username"
+            placeholder="用户名：admin"
+        >
           <template #prefix>
             <icon-user />
           </template>
@@ -23,13 +27,13 @@
       </a-form-item>
       <a-form-item
           field="password"
-          :rules="[{ required: true, message: '密码为空'}]"
+          :rules="[{ required: true, message: '密码不能为空' }]"
           :validate-trigger="['change', 'blur']"
           hide-label
       >
         <a-input-password
             v-model="userInfo.password"
-            placeholder="请输入密码"
+            placeholder="密码：admin"
             allow-clear
         >
           <template #prefix>
@@ -39,77 +43,65 @@
       </a-form-item>
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
-          <a-checkbox
-              checked="rememberPassword"
-              :model-value="loginConfig.rememberPassword"
-              @change="setRememberPassword as any"
-          >记住密码
-          </a-checkbox>
           <a-link>忘记密码</a-link>
         </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">登录</a-button>
+        <a-button type="primary" html-type="submit" long :loading="loading">
+          登录
+        </a-button>
       </a-space>
     </a-form>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
-import { ValidatedError } from "@arco-design/web-vue/es/form/interface";
-import { useStorage } from "@vueuse/core";
 import { useUserStore } from "@/store";
 import useLoading from "@/hooks/loading";
-import type { LoginData } from "@/api/user";
 
 const router = useRouter();
 const errorMessage = ref("");
 const { loading, setLoading } = useLoading();
 const userStore = useUserStore();
 
-const loginConfig = useStorage("login-build", {
+const loginConfig = ref({
   rememberPassword: true,
-  username: "admin", // 演示默认值
-  password: "admin", // demo default value
+  username: "admin",
+  password: "1",
 });
 const userInfo = reactive({
   username: loginConfig.value.username,
   password: loginConfig.value.password,
 });
 
-const handleSubmit = async ({ errors, values }: {
-  errors: Record<string, ValidatedError> | undefined;
-  values: Record<string, any>;
-}) => {
-  if (loading.value) return;
-  if (!errors) {
-    setLoading(true);
-    try {
-      await userStore.login(values as LoginData);
-      const { redirect, ...othersQuery } = router.currentRoute.value.query;
-      router.push({
-        name: (redirect as string) || "Workplace",
-        query: {
-          ...othersQuery,
-        },
-      });
-      Message.success("登录成功");
-      const { rememberPassword } = loginConfig.value;
-      const { username, password } = values;
-      // 实际生产环境需要进行加密存储。
-      // The actual production environment requires encrypted storage.
-      loginConfig.value.username = rememberPassword ? username : "";
-      loginConfig.value.password = rememberPassword ? password : "";
-    } catch (err) {
-      errorMessage.value = (err as Error).message;
-    } finally {
-      setLoading(false);
-    }
+const handleSubmit = async ({ errors, values }) => {
+  if (loading.value) {
+    return;
+  }
+  if (errors) {
+    return;
+  }
+  setLoading(true);
+  try {
+    const { username, password } = values;
+    await userStore.webLogin(username, password);
+    const { redirect, ...othersQuery } = router.currentRoute.value.query;
+    await router.push({ path: "/" });
+    Message.success("欢迎使用");
+    // const { rememberPassword } = loginConfig.value;
+    // 实际生产环境需要进行加密存储。
+    // The actual production environment requires encrypted storage.
+    // loginConfig.value.username = rememberPassword ? username : "";
+    // loginConfig.value.password = rememberPassword ? password : "";
+  } catch (err) {
+    errorMessage.value = err.message ? err.message : "登录失败";
+  } finally {
+    setLoading(false);
   }
 };
-const setRememberPassword = (value: boolean) => {
-  loginConfig.value.rememberPassword = value;
+const setRememberPassword = (value) => {
+  // loginConfig.value.rememberPassword = value;
 };
 </script>
 

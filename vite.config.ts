@@ -5,12 +5,13 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import svgLoader from "vite-svg-loader";
 import configArcoStyleImportPlugin from "./build/plugin/arcoStyleImport";
 import configCompressPlugin from "./build/plugin/compress";
-import configVisualizerPlugin from "./build/plugin/visualizer";
 import configArcoResolverPlugin from "./build/plugin/arcoResolver";
+import { ViteEjsPlugin } from "vite-plugin-ejs";
 
 const CWD = process.cwd();
 export default ({ mode }: ConfigEnv): UserConfig => {
-  const { VITE_BASE_PATH } = loadEnv(mode, CWD);
+  const isProd = mode === "production";
+  const { VITE_BASE_PATH, VITE_APP_TITLE } = loadEnv(mode, CWD);
   return {
     base: VITE_BASE_PATH,
     plugins: [
@@ -20,8 +21,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       configArcoStyleImportPlugin(),
       // production
       configCompressPlugin("gzip"),
-      configVisualizerPlugin(),
       configArcoResolverPlugin(),
+      ViteEjsPlugin({
+        title: VITE_APP_TITLE,
+      }),
     ],
     resolve: {
       alias: [
@@ -55,7 +58,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     build: {
-      sourcemap: false,
+      sourcemap: !isProd,
       rollupOptions: {
         output: {
           manualChunks: {
