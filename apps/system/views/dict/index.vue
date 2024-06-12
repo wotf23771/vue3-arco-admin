@@ -147,7 +147,11 @@
     </a-card>
   </div>
 </template>
-
+<script>
+export default {
+  name: "Dict",
+};
+</script>
 <script setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import TypeAdd from "./TypeAdd.vue";

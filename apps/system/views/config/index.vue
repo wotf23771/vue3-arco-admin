@@ -140,7 +140,11 @@
     </a-card>
   </div>
 </template>
-
+<script>
+export default {
+  name: "Config",
+};
+</script>
 <script setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import ConfigAdd from "./ConfigAdd.vue";

@@ -5,7 +5,7 @@ import { isString } from "@/utils/is";
 const formatTag = (route) => {
   const { name, meta, fullPath, query, path } = route;
   return {
-    title: meta.locale || "",
+    title: meta.title || "",
     name: String(name),
     path,
     fullPath,
@@ -38,6 +38,7 @@ const useAppStore = defineStore("tabBar", {
       if (!route.meta.ignoreCache) {
         this.cacheTabList.add(route.name);
       }
+      console.log("cacheTabList", this.cacheTabList);
     },
     deleteTag(idx, tag) {
       this.tagList.splice(idx, 1);
