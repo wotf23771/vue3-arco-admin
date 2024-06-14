@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['参数设置', '系统参数']" />
-    <a-card style="height:calc(100vh - 190px);overflow: auto;" :bordered="false">
+    <a-card style="height:calc(100vh - 170px);overflow: auto;" :bordered="false">
       <a-row>
         <a-col :flex="1">
           <a-form :model="queryParam" :label-col-props="{ span: 10 }" :wrapper-col-props="{ span: 14 }" label-align="right">
@@ -113,11 +113,13 @@
           <icon-plus />
           新建配置
         </template>
-        <config-add v-if="configAddVisible" ref="configAddRef" @success="search(false)"></config-add>
+        <a-spin :loading="loading">
+          <config-add v-if="configAddVisible" ref="configAddRef" @success="search(false)"></config-add>
+        </a-spin>
         <template #footer>
           <a-button @click="()=>{ configAddVisible = false }">取消</a-button>
           <a-popconfirm content="确定要保存？" @ok="handleConfigAddOk">
-            <a-button type="primary">保存</a-button>
+            <a-button :loading="loading" type="primary">保存</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -128,11 +130,13 @@
           <icon-edit />
           修改配置
         </template>
-        <config-edit v-if="configEditVisible" ref="configEditRef" @success="search(false)"></config-edit>
+        <a-spin :loading="loading">
+          <config-edit v-if="configEditVisible" ref="configEditRef" @success="search(false)"></config-edit>
+        </a-spin>
         <template #footer>
           <a-button @click="()=>{ configEditVisible = false }">取消</a-button>
           <a-popconfirm content="确定要更新？" @ok="handleConfigEditOk">
-            <a-button type="primary">更新</a-button>
+            <a-button :loading="loading" type="primary">更新</a-button>
           </a-popconfirm>
         </template>
       </a-modal>
@@ -151,6 +155,8 @@ import ConfigAdd from "./ConfigAdd.vue";
 import ConfigEdit from "./ConfigEdit.vue";
 import { Message } from "@arco-design/web-vue";
 import { deleteConfig, queryConfig, refreshConfigCache } from "../../api/configApi";
+import useLoading from "@/hooks/useLoading";
+import { load } from "@amap/amap-jsapi-loader";
 
 const isEnabledOptions = reactive([
   { text: "启用", value: 1 },
@@ -160,7 +166,7 @@ const showMoreSearch = ref(false);
 const handleShowMoreSearch = (show) => {
   showMoreSearch.value = show;
 };
-const loading = ref(false);
+const { loading, setLoading } = useLoading();
 const queryParam = reactive({
   name: "",
   code: "",
@@ -204,15 +210,15 @@ const reset = () => {
 };
 const loadTableData = async () => {
   try {
-    loading.value = true;
+    setLoading(true);
     const { data, page } = await queryConfig(tablePagination, queryParam);
     tableData.value = data;
     tablePagination.totalCount = page.totalCount;
   } catch (err) {
-    loading.value = false;
+    setLoading(false);
     console.log("err", err);
   } finally {
-    loading.value = false;
+    setLoading(false);
   }
 };
 
@@ -223,10 +229,12 @@ const handleAdd = () => {
   configAddVisible.value = true;
 };
 const handleConfigAddOk = async () => {
+  setLoading(true);
   const result = await configAddRef.value.handleSubmit();
   if (result) {
     configAddVisible.value = false;
   }
+  setLoading(false);
 };
 
 // build update
@@ -240,16 +248,18 @@ const handleEdit = (record) => {
   });
 };
 const handleConfigEditOk = async () => {
+  setLoading(true);
   const result = await configEditRef.value.handleSubmit();
   if (result) {
     configEditVisible.value = false;
   }
+  setLoading(true);
 };
 
 // build delete
 const handleDelete = async (record) => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { success, message } = await deleteConfig(record.id);
     if (success) {
       Message.success("删除成功");
@@ -257,25 +267,23 @@ const handleDelete = async (record) => {
     } else {
       Message.error(message || "删除失败");
     }
-    loading.value = false;
   } catch (err) {
-    loading.value = false;
   }
+  setLoading(false);
 };
 
 const handleRefreshCache = async () => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { success, message } = await refreshConfigCache();
     if (success) {
       Message.success("刷新成功");
     } else {
       Message.error(message || "刷新失败");
     }
-    loading.value = false;
   } catch (err) {
-    loading.value = false;
   }
+  setLoading(false);
 };
 </script>
 

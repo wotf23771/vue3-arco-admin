@@ -1,47 +1,43 @@
 <template>
-  <a-spin :loading="loading">
-    <a-form load ref="formRef" :model="form">
-      <a-row :gutter="16">
-        <a-col span="22">
-          <a-form-item field="value" label="字典值" label-col-flex="80px" disabled>
-            <a-input v-model="form.value" placeholder="请输入字典值" />
-          </a-form-item>
-        </a-col>
-        <a-col span="22">
-          <a-form-item field="text" label="字典文本" label-col-flex="80px" :rules="[{ required: true, message: '字典文本为空' }]">
-            <a-input v-model="form.text" placeholder="请输入字典文本" />
-          </a-form-item>
-        </a-col>
-        <a-col span="22">
-          <a-form-item field="isEnabled" label="启用状态" label-col-flex="80px">
-            <a-switch v-model="form.isEnabled" type="round" :unchecked-value="0" :checked-value="1" />
-          </a-form-item>
-        </a-col>
-        <a-col span="22">
-          <a-form-item field="sn" label="排序号" label-col-flex="80px">
-            <a-input-number v-model="form.sn" :min="1" />
-          </a-form-item>
-        </a-col>
-        <a-col span="22">
-          <a-form-item field="remark" label="备注" label-col-flex="80px">
-            <a-textarea v-model="form.remark" allow-clear />
-          </a-form-item>
-        </a-col>
-      </a-row>
-    </a-form>
-  </a-spin>
+  <a-form load ref="formRef" :model="form">
+    <a-row :gutter="16">
+      <a-col span="22">
+        <a-form-item field="value" label="字典值" label-col-flex="80px" disabled>
+          <a-input v-model="form.value" placeholder="请输入字典值" />
+        </a-form-item>
+      </a-col>
+      <a-col span="22">
+        <a-form-item field="text" label="字典文本" label-col-flex="80px" :rules="[{ required: true, message: '字典文本为空' }]">
+          <a-input v-model="form.text" placeholder="请输入字典文本" />
+        </a-form-item>
+      </a-col>
+      <a-col span="22">
+        <a-form-item field="isEnabled" label="启用状态" label-col-flex="80px">
+          <a-switch v-model="form.isEnabled" type="round" :unchecked-value="0" :checked-value="1" />
+        </a-form-item>
+      </a-col>
+      <a-col span="22">
+        <a-form-item field="sn" label="排序号" label-col-flex="80px">
+          <a-input-number v-model="form.sn" :min="1" />
+        </a-form-item>
+      </a-col>
+      <a-col span="22">
+        <a-form-item field="remark" label="备注" label-col-flex="80px">
+          <a-textarea v-model="form.remark" allow-clear />
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
 </template>
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { Message } from "@arco-design/web-vue";
 import { getValue, updateValue } from "../../api/dictApi";
 
 const formRef = ref();
-const loading = ref(false);
-
 const emits = defineEmits(["success"]);
 const formId = ref("");
-let form = ref({
+let form = reactive({
   text: "",
   value: "",
   sn: 1,
@@ -53,7 +49,7 @@ let form = ref({
 const loadData = async () => {
   const { success, data, message } = await getValue(formId.value);
   if (success) {
-    form.value = data;
+    Object.assign(form, data);
   } else {
     Message.error(message || "加载数据失败");
   }
@@ -67,13 +63,11 @@ const init = (id) => {
 
 const handleSubmit = async () => {
   try {
-    loading.value = true;
     const valid = await formRef.value.validate();
     if (valid) {
       return false;
     }
-    loading.value = true;
-    const { success, message } = await updateValue(formId.value, form.value);
+    const { success, message } = await updateValue(formId.value, form);
     if (!success) {
       Message.error(message || "更新失败");
       return false;
@@ -82,10 +76,7 @@ const handleSubmit = async () => {
     emits("success");
     return true;
   } catch (err) {
-    loading.value = false;
     return false;
-  } finally {
-    loading.value = false;
   }
 };
 

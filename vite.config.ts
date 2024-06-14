@@ -50,7 +50,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         less: {
           modifyVars: {
             hack: `true; @import (reference) "${resolve(
-              "src/assets/style/breakpoint.less",
+              "src/theme/default/index.less",
             )}";`,
           },
           javascriptEnabled: true,

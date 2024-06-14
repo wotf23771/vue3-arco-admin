@@ -1,7 +1,7 @@
 <template>
   <a-breadcrumb class="container-breadcrumb">
     <a-breadcrumb-item>
-      <icon-apps/>
+      <icon-apps />
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
       {{ item }}
@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType} from 'vue';
+import { PropType } from "vue";
 
 defineProps({
   items: {
@@ -24,7 +24,7 @@ defineProps({
 
 <style scoped lang="less">
 .container-breadcrumb {
-  margin: 16px 0;
+  margin: 5px 0;
 
   :deep(.arco-breadcrumb-item) {
     color: rgb(var(--gray-6));

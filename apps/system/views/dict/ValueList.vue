@@ -48,11 +48,13 @@
         <icon-plus />
         新建字典值
       </template>
-      <value-add v-if="valueAddVisible" ref="valueAddRef" @success="loadTableData"></value-add>
+      <a-spin :loading="loading">
+        <value-add v-if="valueAddVisible" ref="valueAddRef" @success="loadTableData"></value-add>
+      </a-spin>
       <template #footer>
         <a-button @click="()=>{ valueAddVisible = false }">取消</a-button>
         <a-popconfirm content="确定要保存？" @ok="handleValueAddOk">
-          <a-button type="primary">保存</a-button>
+          <a-button :loading="loading" type="primary">保存</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
@@ -62,11 +64,13 @@
         <icon-edit />
         修改字典
       </template>
-      <value-edit v-if="valueEditVisible" ref="valueEditRef" @success="loadTableData"></value-edit>
+      <a-spin :loading="loading">
+        <value-edit v-if="valueEditVisible" ref="valueEditRef" @success="loadTableData"></value-edit>
+      </a-spin>
       <template #footer>
         <a-button @click="()=>{ valueEditVisible = false }">取消</a-button>
         <a-popconfirm content="确定要更新？" @ok="handleValueEditOk">
-          <a-button type="primary">更新</a-button>
+          <a-button :loading="loading" type="primary">更新</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
@@ -74,54 +78,36 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import { Message } from "@arco-design/web-vue";
 import { deleteValue, listValue } from "../../api/dictApi";
 import ValueAdd from "./ValueAdd.vue";
 import ValueEdit from "./ValueEdit.vue";
+import useLoading from "@/hooks/useLoading";
 
 const emits = defineEmits(["refresh"]);
 const props = defineProps({
   typeId: String,
 });
 
-const loading = ref(false);
-const queryParam = reactive({
-  name: "",
-  code: "",
-  isEnabled: undefined,
-  value: "",
-});
-
+const { loading, setLoading } = useLoading();
 const tableData = ref([]);
-
 onMounted(() => {
   loadTableData();
 });
-
 // 搜索
 const search = () => {
   loadTableData();
 };
-
-const reset = () => {
-  queryParam.isEnabled = undefined;
-  queryParam.type = "";
-  queryParam.name = "";
-  queryParam.value = "";
-  search();
-};
 const loadTableData = async () => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { data } = await listValue(props.typeId);
     tableData.value = data;
   } catch (err) {
-    loading.value = false;
     console.log("err", err);
-  } finally {
-    loading.value = false;
   }
+  setLoading(false);
 };
 
 // add
@@ -134,11 +120,13 @@ const handleAdd = () => {
   });
 };
 const handleValueAddOk = async () => {
+  setLoading(true);
   const result = await valueAddRef.value.handleSubmit();
   if (result) {
     valueAddVisible.value = false;
     emits("refresh");
   }
+  setLoading(false);
 };
 
 // update
@@ -152,16 +140,18 @@ const handleEdit = (record) => {
   });
 };
 const handleValueEditOk = async () => {
+  setLoading(true);
   const result = await valueEditRef.value.handleSubmit();
   if (result) {
     valueEditVisible.value = false;
   }
+  setLoading(false);
 };
 
 // build delete
 const handleDelete = async (record) => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { success, message } = await deleteValue(record.id);
     if (success) {
       Message.success("删除成功");
@@ -170,10 +160,9 @@ const handleDelete = async (record) => {
     } else {
       Message.error(message || "删除失败");
     }
-    loading.value = false;
   } catch (err) {
-    loading.value = false;
   }
+  setLoading(false);
 };
 </script>
 

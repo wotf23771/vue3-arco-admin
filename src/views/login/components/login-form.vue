@@ -58,7 +58,7 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import { useUserStore } from "@/store";
-import useLoading from "@/hooks/loading";
+import useLoading from "@/hooks/useLoading";
 
 const router = useRouter();
 const errorMessage = ref("");

@@ -24,11 +24,11 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, reactive, ref, toRefs} from 'vue';
-import {useI18n} from 'vue-i18n';
-import {MessageListType, MessageRecord, queryMessageList, setMessageStatus,} from '@/api/message';
-import useLoading from '@/hooks/loading';
-import List from './list.vue';
+import { computed, reactive, ref, toRefs } from "vue";
+import { useI18n } from "vue-i18n";
+import { MessageListType, MessageRecord, queryMessageList, setMessageStatus } from "@/api/message";
+import useLoading from "@/hooks/useLoading";
+import List from "./list.vue";
 
 interface TabItem {
   key: string;
@@ -36,9 +36,9 @@ interface TabItem {
   avatar?: string;
 }
 
-const {loading, setLoading} = useLoading(true);
-const messageType = ref('message');
-const {t} = useI18n();
+const { loading, setLoading } = useLoading(true);
+const messageType = ref("message");
+const { t } = useI18n();
 const messageData = reactive<{
   renderList: MessageRecord[];
   messageList: MessageRecord[];
@@ -49,23 +49,23 @@ const messageData = reactive<{
 toRefs(messageData);
 const tabList: TabItem[] = [
   {
-    key: 'message',
-    title: t('messageBox.tab.title.message'),
+    key: "message",
+    title: t("messageBox.tab.title.message"),
   },
   {
-    key: 'notice',
-    title: t('messageBox.tab.title.notice'),
+    key: "notice",
+    title: t("messageBox.tab.title.notice"),
   },
   {
-    key: 'todo',
-    title: t('messageBox.tab.title.todo'),
+    key: "todo",
+    title: t("messageBox.tab.title.todo"),
   },
 ];
 
 async function fetchSourceData() {
   setLoading(true);
   try {
-    const {data} = await queryMessageList();
+    const { data } = await queryMessageList();
     messageData.messageList = data;
   } catch (err) {
     // you can report use errorHandler or other
@@ -76,13 +76,13 @@ async function fetchSourceData() {
 
 async function readMessage(data: MessageListType) {
   const ids = data.map((item) => item.id);
-  await setMessageStatus({ids});
+  await setMessageStatus({ ids });
   fetchSourceData();
 }
 
 const renderList = computed(() => {
   return messageData.messageList.filter(
-      (item) => messageType.value === item.type
+      (item) => messageType.value === item.type,
   );
 });
 const unreadCount = computed(() => {
@@ -90,7 +90,7 @@ const unreadCount = computed(() => {
 });
 const getUnreadList = (type: string) => {
   const list = messageData.messageList.filter(
-      (item) => item.type === type && !item.status
+      (item) => item.type === type && !item.status,
   );
   return list;
 };
