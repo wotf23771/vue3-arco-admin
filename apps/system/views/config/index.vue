@@ -253,7 +253,7 @@ const handleConfigEditOk = async () => {
   if (result) {
     configEditVisible.value = false;
   }
-  setLoading(true);
+  setLoading(false);
 };
 
 // build delete

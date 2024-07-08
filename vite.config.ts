@@ -49,9 +49,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       preprocessorOptions: {
         less: {
           modifyVars: {
-            hack: `true; @import (reference) "${resolve(
-              "src/theme/default/index.less",
-            )}";`,
+            hack: `true; 
+            @import (reference) "${resolve("src/assets/style/breakpoint.less")}";
+            @import (reference) "${resolve("src/theme/default/index.less")}";
+            `,
           },
           javascriptEnabled: true,
         },

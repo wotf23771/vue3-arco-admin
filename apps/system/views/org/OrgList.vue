@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container1">
     <a-row>
       <a-col :flex="1">
         <a-form :model="queryParam" :label-col-props="{ span: 10 }" :wrapper-col-props="{ span: 14 }" label-align="right">
@@ -103,11 +103,13 @@
         <icon-plus />
         新建组织
       </template>
-      <org-add v-if="orgAddVisible" ref="orgAddRef" @success="search(false)"></org-add>
+      <a-spin :loading="loading">
+        <org-add v-if="orgAddVisible" ref="orgAddRef" @success="search(false)"></org-add>
+      </a-spin>
       <template #footer>
         <a-button @click="()=>{ orgAddVisible = false }">取消</a-button>
         <a-popconfirm content="确定要保存？" @ok="handleOrgAddOk">
-          <a-button type="primary">保存</a-button>
+          <a-button :loading="loading" type="primary">保存</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
@@ -117,11 +119,13 @@
         <icon-edit />
         修改组织
       </template>
-      <org-edit v-if="orgEditVisible" ref="orgEditRef" @success="loadTableData"></org-edit>
+      <a-spin :loading="loading">
+        <org-edit v-if="orgEditVisible" ref="orgEditRef" @success="loadTableData"></org-edit>
+      </a-spin>
       <template #footer>
         <a-button @click="()=>{ orgEditVisible = false }">取消</a-button>
         <a-popconfirm content="确定要更新？" @ok="handleOrgEditOk">
-          <a-button type="primary">更新</a-button>
+          <a-button :loading type="primary">更新</a-button>
         </a-popconfirm>
       </template>
     </a-modal>
@@ -135,8 +139,10 @@ import { listDictItem } from "@/api/dictApi";
 import OrgAdd from "./OrgAdd.vue";
 import OrgEdit from "./OrgEdit.vue";
 import { Message } from "@arco-design/web-vue";
+import useLoading from "@/hooks/useLoading";
 
-const emits = defineEmits(["refresh"]);
+const { loading, setLoading } = useLoading();
+const emits = defineEmits(["refresh", "update"]);
 const props = defineProps({
   parentId: String,
 });
@@ -158,7 +164,6 @@ const showMoreSearch = ref(false);
 const handleShowMoreSearch = (show) => {
   showMoreSearch.value = show;
 };
-const loading = ref(false);
 const queryParam = reactive({
   name: "",
   type: "",
@@ -204,17 +209,15 @@ const reset = () => {
   search();
 };
 const loadTableData = async () => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { data, page } = await queryOrgChildren(props.parentId, tablePagination, queryParam);
     tableData.value = data;
     tablePagination.totalCount = page.totalCount;
   } catch (err) {
-    loading.value = false;
     console.log("err", err);
-  } finally {
-    loading.value = false;
   }
+  setLoading(false);
 };
 
 // add
@@ -227,11 +230,13 @@ const handleAdd = () => {
   });
 };
 const handleOrgAddOk = async () => {
+  setLoading(true);
   const result = await orgAddRef.value.handleSubmit();
   if (result) {
     orgAddVisible.value = false;
-    emits("refresh");
+    emits("update");
   }
+  setLoading(false);
 };
 
 // update
@@ -245,33 +250,36 @@ const handleEdit = (record) => {
   });
 };
 const handleOrgEditOk = async () => {
+  setLoading(true);
   const result = await orgEditRef.value.handleSubmit();
   if (result) {
     orgEditVisible.value = false;
+    emits("update");
   }
+  setLoading(false);
 };
 
 // delete
 const handleDelete = async (record) => {
+  setLoading(true);
   try {
-    loading.value = true;
     const { success, message } = await deleteOrg(record.id);
     if (success) {
       Message.success("删除成功");
       search(false);
+      emits("update");
     } else {
       Message.error(message || "删除失败");
     }
-    loading.value = false;
   } catch (err) {
-    loading.value = false;
   }
+  setLoading(false);
 };
 </script>
 
 <style scoped lang="less">
-.container {
-  padding: 20px;
+.container1 {
+  padding-left: 16px;
 }
 
 .arco-pagination {
