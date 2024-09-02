@@ -24,4 +24,8 @@ app.use(store);
 app.use(globalComponents);
 app.use(directive);
 
+app.config.errorHandler = (err, vm, info) => {
+
+};
+
 app.mount("#app");

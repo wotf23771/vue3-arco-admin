@@ -1,3 +1,5 @@
+import { decryptByPrivateKey } from "@/utils/rsa";
+
 const TOKEN_KEY = "access_token";
 const PATH_KEY = "LastPath";
 
@@ -23,4 +25,15 @@ const saveLastPath = (path) => {
 const getLastPath = () => {
   return sessionStorage.getItem(PATH_KEY);
 };
-export { isLogin, getToken, setToken, clearToken };
+
+const setUserKey = (privateKey, secretKey) => {
+  let secret = decryptByPrivateKey(privateKey, secretKey);
+  sessionStorage.setItem("secret_key", secret);
+  sessionStorage.setItem("private_key", privateKey);
+};
+
+const getSecretKey = () => {
+  return sessionStorage.getItem("secret_key");
+};
+
+export { isLogin, getToken, setToken, clearToken, setUserKey, getSecretKey };

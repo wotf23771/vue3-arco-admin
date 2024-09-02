@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { getUserInfo, login, logout as userLogout, oauth2Login } from "@/api/login";
-import { clearToken, setToken } from "@/utils/auth";
+import { clearToken, setToken, setUserKey } from "@/utils/auth";
 import { removeRouteListener } from "@/utils/route-listener";
 import useAppStore from "../app";
 
@@ -67,8 +67,9 @@ const useUserStore = defineStore("user", {
         if (!success) {
           throw new Error(message ? message : "登录失败");
         }
-        const { access_token } = data;
+        const { access_token, private_key, secret_key } = data;
         setToken(access_token);
+        setUserKey(private_key, secret_key);
       } catch (err) {
         clearToken();
         throw err;

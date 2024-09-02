@@ -72,9 +72,7 @@ export default defineComponent({
       const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
       openKeys.value = [...keySet];
 
-      selectedKey.value = [
-        activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
-      ];
+      selectedKey.value = [activeMenu || menuOpenKeys[menuOpenKeys.length - 1]];
       // }
     }, true);
     const setCollapse = (val) => {

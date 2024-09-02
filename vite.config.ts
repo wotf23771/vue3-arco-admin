@@ -1,4 +1,4 @@
-import { resolve } from "path";
+import path, { resolve } from "path";
 import { ConfigEnv, loadEnv, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
@@ -60,8 +60,21 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     build: {
       sourcemap: !isProd,
+      target: "ES2020",
       rollupOptions: {
         output: {
+          entryFileNames: "js/[name].[hash].js",
+          chunkFileNames: "js/[name].[hash].js",
+          assetFileNames({ name }) {
+            const extType = path.extname(name).slice(1);
+            if (/^(png|jpe?g|gif|svg)$/.test(extType)) {
+              return `images/[name].[hash].[ext]`;
+            } else if (extType === "css") {
+              return `css/[name].[hash].[ext]`;
+            } else {
+              return `[name].[hash].[ext]`;
+            }
+          },
           manualChunks: {
             arco: ["@arco-design/web-vue"],
             chart: ["echarts", "vue-echarts"],

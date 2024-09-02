@@ -58,29 +58,33 @@ const request = axios.create({
   },
 });
 request.interceptors.request.use(config => {
-    // 是否需要设置 token
-    const isToken = (config.headers || {}).isToken === false;
-    const token = getToken();
-    if (token && !isToken) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return errorHandler(error);
-  },
+      // 是否需要设置 token
+      const isToken = (config.headers || {}).isToken === false;
+      const token = getToken();
+      if (token && !isToken) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return errorHandler(error);
+    },
 );
 // add response interceptors
 request.interceptors.response.use((response) => {
-    if (response.config.responseType === "blob") {
-      return response;
-    } else {
-      return response.data;
-    }
-  },
-  (error) => {
-    return errorHandler(error);
-  },
+      if (response.config.responseType === "blob") {
+        return response;
+      } else {
+        if (response.headers["x-encrypt-body"] == 1) {
+          let data = aesDecode(response.data);
+          return JSON.parse(data);
+        }
+        return Object.assign({ success: false }, response.data);
+      }
+    },
+    (error) => {
+      return errorHandler(error);
+    },
 );
 
 export default request;
