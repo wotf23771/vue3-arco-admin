@@ -6,7 +6,7 @@ import svgLoader from "vite-svg-loader";
 import configArcoStyleImportPlugin from "./build/plugin/arcoStyleImport";
 import configCompressPlugin from "./build/plugin/compress";
 import configArcoResolverPlugin from "./build/plugin/arcoResolver";
-import { ViteEjsPlugin } from "vite-plugin-ejs";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 
 const CWD = process.cwd();
 export default ({ mode }: ConfigEnv): UserConfig => {
@@ -22,8 +22,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       // production
       configCompressPlugin("gzip"),
       configArcoResolverPlugin(),
-      ViteEjsPlugin({
-        title: VITE_APP_TITLE,
+      createSvgIconsPlugin({
+        iconDirs: [resolve(process.cwd(), "src/assets/icons/svg")],
+        symbolId: "icon-[name]",
+        svgoOptions: true,
       }),
     ],
     resolve: {
@@ -60,7 +62,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     build: {
       sourcemap: !isProd,
-      target: "ES2020",
+      target: "esnext",
       rollupOptions: {
         output: {
           entryFileNames: "js/[name].[hash].js",
@@ -78,7 +80,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           manualChunks: {
             arco: ["@arco-design/web-vue"],
             chart: ["echarts", "vue-echarts"],
-            vue: ["vue", "vue-router", "pinia", "@vueuse/core", "vue-i18n"],
+            vue: ["vue", "vue-router", "pinia", "@vueuse/core"],
           },
         },
       },
@@ -87,9 +89,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     server: {
       open: false,
       port: 8000,
-      fs: {
-        strict: true,
-      },
     },
   };
 };

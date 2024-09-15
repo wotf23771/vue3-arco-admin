@@ -156,7 +156,6 @@ import ConfigEdit from "./ConfigEdit.vue";
 import { Message } from "@arco-design/web-vue";
 import { deleteConfig, queryConfig, refreshConfigCache } from "../../api/configApi";
 import useLoading from "@/hooks/useLoading";
-import { load } from "@amap/amap-jsapi-loader";
 
 const isEnabledOptions = reactive([
   { text: "启用", value: 1 },
