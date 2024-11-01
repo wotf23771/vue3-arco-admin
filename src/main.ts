@@ -13,7 +13,7 @@ import router from "./router";
 import store from "./store";
 import "@/theme/default/index.less";
 
-import.meta.glob("/apps/**/main.js", { eager: true });
+import.meta.glob("/apps/**/main.ts", { eager: true });
 
 const app = createApp(App);
 

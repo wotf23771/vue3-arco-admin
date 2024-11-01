@@ -19,10 +19,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useAppStore, useTabBarStore } from "@/store";
+import { listenerRouteChange, removeRouteListener } from "@/utils/route-listener";
 import { computed, onUnmounted, ref, watch } from "vue";
 import type { RouteLocationNormalized } from "vue-router";
-import { listenerRouteChange, removeRouteListener } from "@/utils/route-listener";
-import { useAppStore, useTabBarStore } from "@/store";
 import tabItem from "./tab-item.vue";
 
 const appStore = useAppStore();
@@ -49,6 +49,10 @@ listenerRouteChange((route: RouteLocationNormalized) => {
   ) {
     tabBarStore.updateTabList(route);
   }
+  let index = tagList.value.findIndex((el) => el.path === route.path);
+  let tab = tagList.value[index];
+  tabBarStore.setCurrentIndex(index);
+  tabBarStore.setCurrentName(tab.name);
 }, true);
 
 onUnmounted(() => {

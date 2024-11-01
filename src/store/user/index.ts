@@ -1,28 +1,22 @@
-import { defineStore } from "pinia";
 import { getUserInfo, login, logout as userLogout, oauth2Login } from "@/api/login";
 import { clearToken, setToken, setUserKey } from "@/utils/auth";
 import { removeRouteListener } from "@/utils/route-listener";
+import { defineStore } from "pinia";
 import useAppStore from "../app";
+import { UserState } from "./types";
 
 const useUserStore = defineStore("user", {
-  state: () => ({
+  state: (): UserState => ({
     id: undefined,
     name: undefined,
+    account: undefined,
+    orgId: undefined,
+    orgName: undefined,
+    orgPathName: undefined,
     avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
-    email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
-    phone: undefined,
-    registrationDate: undefined,
-    accountId: undefined,
-    certification: undefined,
-    role: "",
+    loginError: "",
+    admin: false,
+    allowLogin: true,
   }),
 
   getters: {
@@ -32,13 +26,6 @@ const useUserStore = defineStore("user", {
   },
 
   actions: {
-    switchRoles() {
-      return new Promise((resolve) => {
-        this.role = this.role === "user" ? "admin" : "user";
-        resolve(this.role);
-      });
-    },
-
     // Reset user's information
     resetInfo() {
       this.$reset();
@@ -51,9 +38,10 @@ const useUserStore = defineStore("user", {
     },
 
     // Login
-    async login(code, state) {
+    async login(code: string, state: string) {
       try {
-        const { access_token } = await oauth2Login(code, state);
+        const { data } = await oauth2Login(code, state);
+        const { access_token, private_key, secret_key } = data;
         setToken(access_token);
       } catch (err) {
         clearToken();
@@ -61,7 +49,7 @@ const useUserStore = defineStore("user", {
       }
     },
     // webLogin
-    async webLogin(username, password) {
+    async webLogin(username: string, password: string) {
       try {
         const { data, success, message } = await login(username, password);
         if (!success) {

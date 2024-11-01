@@ -35,9 +35,9 @@
   </a-form>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
 import { Message } from "@arco-design/web-vue";
-import { getConfig, updateConfig } from "../../api/configApi";
+import { reactive, ref } from "vue";
+import { getConfig, updateConfig } from "../../../api/configApi";
 
 const formRef = ref();
 const emits = defineEmits(["success"]);

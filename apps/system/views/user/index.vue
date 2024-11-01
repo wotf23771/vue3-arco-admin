@@ -1,41 +1,44 @@
 <template>
-  <a-layout style="height: calc(100vh - 107px);margin: 0 2px;">
-    <a-layout>
-      <a-layout-sider :width="240" style="padding:10px;">
-        <a-tree
-            ref="treeRef"
-            :field-names="treeFieldNames"
-            :data="treeData"
-            :load-more="loadTreeMore"
-            :expanded-keys="expendKeys"
-            @select="handleClickTreeNode"
-            block-node>
-          <template #switcher-icon>
-            <IconDown />
-          </template>
-          <template #icon="{ node }">
-            <IconHome v-if="node.type==1" />
-            <IconStorage v-if="node.type==2" />
-          </template>
-        </a-tree>
-      </a-layout-sider>
-      <a-layout-content>
-        <org-user-list
-            ref="orgUserListRef"
-            :org-id="currentOrgId"
-            :org-type="currentOrgType"
-            :org-name="currentOrgName"
-        >
-        </org-user-list>
-      </a-layout-content>
-    </a-layout>
-  </a-layout>
+  <div class="container">
+    <Breadcrumb :items="['系统设置', '组织管理']" />
+    <a-card style="height:calc(100vh - 170px);overflow: auto;" :bordered="false">
+      <div style="display: flex">
+        <a-resize-box :directions="['right']" style="width:260px;height:calc(100vh - 205px);">
+          <a-tree
+              ref="treeRef"
+              :field-names="treeFieldNames"
+              :data="treeData"
+              :load-more="loadTreeMore"
+              :expanded-keys="expendKeys"
+              @select="handleClickTreeNode"
+              block-node>
+            <template #switcher-icon>
+              <IconDown />
+            </template>
+            <template #icon="{ node }">
+              <IconHome v-if="node.type==1" />
+              <IconStorage v-if="node.type==2" />
+            </template>
+          </a-tree>
+        </a-resize-box>
+        <div style="flex: 1;overflow: auto">
+          <org-user-list
+              ref="orgUserListRef"
+              :org-id="currentOrgId"
+              :org-type="currentOrgType"
+              :org-name="currentOrgName"
+          >
+          </org-user-list>
+        </div>
+      </div>
+    </a-card>
+  </div>
 </template>
 <script setup>
+import { IconHome } from "@arco-design/web-vue/es/icon";
 import { onMounted, ref, unref } from "vue";
 import { listOrgByParentId } from "../../api/orgApi";
 import OrgUserList from "./OrgUserList.vue";
-import { IconHome } from "@arco-design/web-vue/es/icon";
 
 const treeRef = ref();
 const treeFieldNames = {
@@ -103,5 +106,7 @@ const orgUserListRef = ref();
 </script>
 
 <style scoped lang="less">
-
+.container {
+  padding: 0 20px;
+}
 </style>

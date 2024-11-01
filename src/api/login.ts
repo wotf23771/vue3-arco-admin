@@ -1,23 +1,24 @@
 import request from "@/utils/request";
 
-export function login(username, password) {
+export interface LoginResp {
+  access_token: string,
+  private_key?: string,
+  secret_key?: string
+}
+
+export function login(username: string, password: string): Promise<WebResult<LoginResp>> {
   return request({
-    url: "/login",
+    url: "/security/login",
     method: "post",
     params: { username, password },
   });
 }
 
-export function oauth2Login(code, state) {
-  // return request({
-  //     url: "/login/oauth2/code/admin",
-  //     method: "get",
-  //     params: { code, state },
-  // });
-  return new Promise((resolve, reject) => {
-    resolve({
-      access_token: "1234567890",
-    });
+export function oauth2Login(code: string, state: string): Promise<WebResult<LoginResp>> {
+  return request({
+    url: "/login/oauth2/code/admin",
+    method: "get",
+    params: { code, state },
   });
 }
 
@@ -42,9 +43,9 @@ export function getUserMenu() {
   });
 }
 
-export function getOAuth2AuthorizeUrl(redirectUri) {
+export function getOAuth2AuthorizeUrl(redirectUri: string) {
   return request({
-    url: "/auth/url",
+    url: "/security/auth/url",
     method: "post",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",

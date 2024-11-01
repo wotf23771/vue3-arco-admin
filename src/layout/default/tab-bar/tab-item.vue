@@ -57,11 +57,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { DEFAULT_ROUTE, REDIRECT_ROUTE_NAME } from "@/router/constants";
 import { useTabBarStore } from "@/store";
 import type { TagProps } from "@/store/tab-bar/types";
-import { DEFAULT_ROUTE, REDIRECT_ROUTE_NAME } from "@/router/constants";
+import { computed, PropType } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 // eslint-disable-next-line no-shadow
 enum Eaction {
@@ -92,7 +92,7 @@ const tabBarStore = useTabBarStore();
 
 const goto = (tag: TagProps) => {
   // router.push({ ...tag });
-  router.push({ path: tag.path });
+  router.push({ path: tag.fullPath, query: tag.query });
 };
 const tagList = computed(() => {
   return tabBarStore.getTabList;

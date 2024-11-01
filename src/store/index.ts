@@ -1,7 +1,7 @@
 import { createPinia } from "pinia";
 import useAppStore from "./app";
-import useUserStore from "./user";
 import useTabBarStore from "./tab-bar";
+import useUserStore from "./user";
 
 const pinia = createPinia();
 

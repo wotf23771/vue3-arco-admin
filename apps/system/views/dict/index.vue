@@ -157,7 +157,7 @@ export default {
 };
 </script>
 <script setup>
-import { nextTick, onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, ref, reactive } from "vue";
 import TypeAdd from "./TypeAdd.vue";
 import TypeEdit from "./TypeEdit.vue";
 import { Message } from "@arco-design/web-vue";

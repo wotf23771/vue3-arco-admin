@@ -1,9 +1,9 @@
 <script lang="jsx">
+import { useAppStore } from "@/store";
+import { openWindow, regexUrl } from "@/utils";
+import { listenerRouteChange } from "@/utils/route-listener";
 import { compile, computed, defineComponent, h, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAppStore } from "@/store";
-import { listenerRouteChange } from "@/utils/route-listener";
-import { openWindow, regexUrl } from "@/utils";
 import useMenuTree from "./use-menu-tree";
 
 export default defineComponent({

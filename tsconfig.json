@@ -11,6 +11,9 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
+      "#": [
+        "."
+      ],
       "@/*": [
         "src/*"
       ]
@@ -23,11 +26,12 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "apps/**/*.ts",
+    "apps/**/*.vue"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "src/main.js"
+    "dist"
   ]
 }

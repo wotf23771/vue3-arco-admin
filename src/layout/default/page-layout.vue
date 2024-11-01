@@ -14,8 +14,8 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
 import { useTabBarStore } from "@/store";
+import { computed } from "vue";
 
 const tabBarStore = useTabBarStore();
 

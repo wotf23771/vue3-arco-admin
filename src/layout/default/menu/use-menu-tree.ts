@@ -1,7 +1,7 @@
-import { computed } from "vue";
 import usePermission from "@/hooks/permission";
 import { useAppStore } from "@/store";
 import cloneDeep from "lodash-es/cloneDeep";
+import { computed } from "vue";
 
 export default function useMenuTree() {
   const permission = usePermission();

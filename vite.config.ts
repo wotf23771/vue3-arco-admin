@@ -1,12 +1,12 @@
-import path, { resolve } from "path";
-import { ConfigEnv, loadEnv, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
+import path, { resolve } from "path";
+import { ConfigEnv, loadEnv, UserConfig } from "vite";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import svgLoader from "vite-svg-loader";
+import configArcoResolverPlugin from "./build/plugin/arcoResolver";
 import configArcoStyleImportPlugin from "./build/plugin/arcoStyleImport";
 import configCompressPlugin from "./build/plugin/compress";
-import configArcoResolverPlugin from "./build/plugin/arcoResolver";
-import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 
 const CWD = process.cwd();
 export default ({ mode }: ConfigEnv): UserConfig => {
@@ -17,7 +17,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     plugins: [
       vue(),
       vueJsx(),
-      svgLoader({ svgoConfig: {} }),
+      svgLoader({
+        svgo: false,
+        defaultImport: "url",
+      }),
       configArcoStyleImportPlugin(),
       // production
       configCompressPlugin("gzip"),
@@ -30,6 +33,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     ],
     resolve: {
       alias: [
+        {
+          find: "#",
+          replacement: resolve(__dirname),
+        },
         {
           find: "@",
           replacement: resolve(__dirname, "src"),

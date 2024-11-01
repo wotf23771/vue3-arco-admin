@@ -143,12 +143,12 @@
 </template>
 
 <script setup>
+import { Message } from "@arco-design/web-vue";
 import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { deleteOrgUser, queryOrgUser, saveOrgUser } from "../../api/orgUserApi";
+import DeptSelector from "../../components/DeptSelector.vue";
 import UserAdd from "./UserAdd.vue";
 import UserEdit from "./UserEdit.vue";
-import DeptSelector from "../../components/DeptSelector.vue";
-import { Message } from "@arco-design/web-vue";
 
 const props = defineProps({
   orgId: String,

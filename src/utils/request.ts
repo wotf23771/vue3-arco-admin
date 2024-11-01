@@ -2,6 +2,7 @@ import axios from "axios";
 import { getToken } from "@/utils/auth";
 import router from "@/router";
 import { Notification } from "@arco-design/web-vue";
+import { aesDecode } from "@/utils/aes";
 
 const errorHandler = (error) => {
   console.log("error", error);
@@ -59,7 +60,8 @@ const request = axios.create({
 });
 request.interceptors.request.use(config => {
       // 是否需要设置 token
-      const isToken = (config.headers || {}).isToken === false;
+      const headers = config.headers || { isToken: false };
+      const isToken = headers.isToken === false;
       const token = getToken();
       if (token && !isToken) {
         config.headers.Authorization = `Bearer ${token}`;

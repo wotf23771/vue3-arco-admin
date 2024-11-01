@@ -151,8 +151,8 @@ export default {
 </script>
 <script setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
-import ConfigAdd from "./ConfigAdd.vue";
-import ConfigEdit from "./ConfigEdit.vue";
+import ConfigAdd from "./components/ConfigAdd.vue";
+import ConfigEdit from "./components/ConfigEdit.vue";
 import { Message } from "@arco-design/web-vue";
 import { deleteConfig, queryConfig, refreshConfigCache } from "../../api/configApi";
 import useLoading from "@/hooks/useLoading";

@@ -1,36 +1,40 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['参数设置', '数据字典']" />
+    <Breadcrumb :items="['系统设置', '组织管理']" />
     <a-card style="height:calc(100vh - 170px);overflow: auto;" :bordered="false">
-      <a-layout style="height: calc(100vh - 205px);margin: 0 2px;">
-        <a-layout>
-          <a-layout-sider :width="240" style="padding:10px;">
-            <a-tree
-                ref="treeRef"
-                :field-names="treeFieldNames"
-                :data="treeData"
-                :load-more="loadTreeMore"
-                :expanded-keys="expendKeys"
-                @expand="handleExpand"
-                @select="handleClickTreeNode"
-                block-node>
-              <template #switcher-icon>
-                <IconDown />
-              </template>
-              <template #icon="{ node }">
-                <IconHome v-if="node.type==1" />
-                <IconStorage v-if="node.type==2" />
-              </template>
-            </a-tree>
-          </a-layout-sider>
-          <a-layout-content>
-            <org-list ref="orgListRef" :parent-id="currentOrgId" @update="updateCurrentNodeChildren"></org-list>
-          </a-layout-content>
-        </a-layout>
-      </a-layout>
+      <div style="display: flex">
+        <a-resize-box :directions="['right']" style="width:260px;height:calc(100vh - 205px);">
+          <a-tree
+              ref="treeRef"
+              :field-names="treeFieldNames"
+              :data="treeData"
+              :load-more="loadTreeMore"
+              :expanded-keys="expendKeys"
+              :selected-keys="selectedKeys"
+              @expand="(keys, _) => { expendKeys = keys }"
+              @select="handleClickTreeNode"
+              block-node>
+            <template #switcher-icon>
+              <IconDown />
+            </template>
+            <template #icon="{ node }">
+              <IconHome v-if="node.type==1" />
+              <IconStorage v-if="node.type==2" />
+            </template>
+          </a-tree>
+        </a-resize-box>
+        <div style="flex: 1;overflow: auto">
+          <org-list ref="orgListRef" :parent-id="currentOrgId" @update="updateCurrentNodeChildren"></org-list>
+        </div>
+      </div>
     </a-card>
   </div>
 </template>
+<script>
+export default {
+  name: "Org",
+};
+</script>
 <script setup>
 import { onMounted, ref, unref } from "vue";
 import { listOrgByParentId } from "../../api/orgApi";
@@ -42,7 +46,7 @@ const treeFieldNames = {
   key: "id",
   title: "name",
 };
-
+const selectedKeys = ref([]);
 const treeData = ref([]);
 
 onMounted(() => {
@@ -52,11 +56,13 @@ onMounted(() => {
 const loadTreeRoot = async () => {
   const { data } = await listOrgByParentId("0");
   if (data) {
+    let rootId = data[0].id;
     currentNode.value = data[0];
     currentOrgId.value = data[0].id;
     if (data.length == 1) {
       expendKeys.value = [];
-      expendKeys.value.push(data[0].id);
+      expendKeys.value.push(rootId);
+      selectedKeys.value.push(rootId);
     }
   }
   treeData.value = data;
@@ -84,10 +90,8 @@ const updateCurrentNodeChildren = () => {
   }
 };
 
-const handleExpand = (keys, data) => {
-  expendKeys.value = keys;
-};
-const handleClickTreeNode = (selectedKeys, data) => {
+const handleClickTreeNode = (_selectedKeys, data) => {
+  selectedKeys.value = _selectedKeys;
   currentOrg.value = unref(data.node);
   currentOrgId.value = currentOrg.value.id;
   currentNode.value = data.node;

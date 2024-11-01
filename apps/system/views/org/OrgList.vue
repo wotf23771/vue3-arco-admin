@@ -2,30 +2,24 @@
   <div class="container1">
     <a-row>
       <a-col :flex="1">
-        <a-form :model="queryParam" :label-col-props="{ span: 10 }" :wrapper-col-props="{ span: 14 }" label-align="right">
-          <a-row>
-            <a-col :span="10">
-              <a-form-item label="名称">
+        <a-form layout="inline" label-align="right">
+          <div ref="searchLineRef" style="height:40px;overflow: hidden;" :style="{height:searchLineDefaultHeight}">
+            <a-row>
+              <a-form-item label="名称" :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
                 <a-input v-model="queryParam.name" placeholder="请输入名称" allow-clear />
               </a-form-item>
-            </a-col>
-            <a-col :span="10">
-              <a-form-item label="类型">
+              <a-form-item label="类型" :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
                 <a-select v-model="queryParam.type" placeholder="请选择" allow-clear>
                   <a-option v-for="item in orgTypeOptions" :key="item.value" :value="item.value">{{ item.text }}</a-option>
                 </a-select>
               </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row v-if="showMoreSearch">
-            <a-col :span="10">
-              <a-form-item label="启用状态">
+              <a-form-item label="启用状态" :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
                 <a-select v-model="queryParam.isEnabled" placeholder="请选择" allow-clear>
                   <a-option v-for="item in isEnabledOptions" :key="item.value" :value="item.value">{{ item.text }}</a-option>
                 </a-select>
               </a-form-item>
-            </a-col>
-          </a-row>
+            </a-row>
+          </div>
         </a-form>
       </a-col>
       <a-col flex="200px" style="text-align: right">
@@ -33,11 +27,9 @@
           <a-button type="primary" @click="search(true)">查询</a-button>
           <a-button @click="reset">重置</a-button>
           <a-link v-if="!showMoreSearch" @click="handleShowMoreSearch(true)">
-            展开
             <icon-down />
           </a-link>
           <a-link v-else @click="handleShowMoreSearch(false)">
-            收起
             <icon-up />
           </a-link>
         </a-space>
@@ -133,13 +125,13 @@
 </template>
 
 <script setup>
+import { listDictItem } from "@/api/dictApi";
+import useLoading from "@/hooks/useLoading";
+import { Message } from "@arco-design/web-vue";
 import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { deleteOrg, queryOrgChildren } from "../../api/orgApi";
-import { listDictItem } from "@/api/dictApi";
 import OrgAdd from "./OrgAdd.vue";
 import OrgEdit from "./OrgEdit.vue";
-import { Message } from "@arco-design/web-vue";
-import useLoading from "@/hooks/useLoading";
 
 const { loading, setLoading } = useLoading();
 const emits = defineEmits(["refresh", "update"]);
@@ -160,10 +152,19 @@ const isEnabledOptions = ref([
   { text: "启用", value: 1 },
   { text: "禁用", value: 0 },
 ]);
+
+const searchLineRef = ref(null);
+const searchLineDefaultHeight = ref("40px");
 const showMoreSearch = ref(false);
 const handleShowMoreSearch = (show) => {
   showMoreSearch.value = show;
+  if (show) {
+    searchLineRef.value.style.height = "inherit";
+  } else {
+    searchLineRef.value.style.height = searchLineDefaultHeight.value;
+  }
 };
+
 const queryParam = reactive({
   name: "",
   type: "",

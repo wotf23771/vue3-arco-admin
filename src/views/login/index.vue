@@ -18,9 +18,9 @@
 
 <script setup>
 import Footer from "@/layout/default/footer/index.vue";
+import { useAppStore } from "@/store";
 import LoginBanner from "./components/banner.vue";
 import LoginForm from "./components/login-form.vue";
-import { useAppStore } from "@/store";
 
 const appStore = useAppStore();
 const appTitle = appStore.appTitle;

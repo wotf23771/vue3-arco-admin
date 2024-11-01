@@ -1,14 +1,14 @@
-import NProgress from "nprogress"; // progress bar
+import { WHITE_PATH } from "@/router/constants";
 import { useUserStore } from "@/store";
 import { isLogin } from "@/utils/auth";
+import NProgress from "nprogress"; // progress bar
+import type { Router } from "vue-router";
 
-const allowList = ["login", "500", "403", "401", "loginDeny", "logout"]; // 白名单路由
 const loginPath = "/login"; // 登录地址
-const defaultRoutePath = "/"; // 默认首页
-export default function setupUserLoginInfoGuard(router) {
+export default function setupUserLoginInfoGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     NProgress.start();
-    if (allowList.includes(to.name)) {
+    if (WHITE_PATH.includes(to.path)) {
       // 在免登录名单，直接进入
       next();
     } else {

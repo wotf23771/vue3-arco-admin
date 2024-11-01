@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
-import { Notification } from "@arco-design/web-vue";
-import defaultSettings from "@/config/settings.json";
 import { getUserMenu } from "@/api/login";
+import defaultSettings from "@/config/settings.json";
+import { Notification } from "@arco-design/web-vue";
+import { defineStore } from "pinia";
 
 const useAppStore = defineStore("app", {
   state: () => ({ ...defaultSettings }),
