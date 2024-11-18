@@ -21,16 +21,16 @@
         :bordered="false"
     >
       <template #columns>
-        <a-table-column title="字典值" data-index="value" width="200"></a-table-column>
+        <a-table-column title="字典值" data-index="value" :width="200"></a-table-column>
         <a-table-column title="字典文本" data-index="text"></a-table-column>
-        <a-table-column title="启用状态" width="100" align="center">
+        <a-table-column title="启用状态" :width="100" align="center">
           <template #cell="{ record }">
             <a-tag v-if="record.isEnabled==1" color="rgb(var(--success-6))">启用</a-tag>
             <a-tag v-if="record.isEnabled!=1" color="rgb(var(--warning-6))">禁用</a-tag>
           </template>
         </a-table-column>
-        <a-table-column title="排序号" data-index="sn" width="80" align="right"></a-table-column>
-        <a-table-column title="操作" align="center" width="100">
+        <a-table-column title="排序号" data-index="sn" :width="80" align="right"></a-table-column>
+        <a-table-column title="操作" align="center" :width="100">
           <template #cell="{ record }">
             <a-space>
               <icon-edit style="cursor:pointer;color:rgb(var(--primary-6));" @click="handleEdit(record)" />
@@ -77,13 +77,14 @@
   </div>
 </template>
 
-<script setup>
-import { nextTick, onMounted, ref } from "vue";
+<script lang="ts" setup>
+import useLoading from "@/hooks/useLoading.js";
 import { Message } from "@arco-design/web-vue";
-import { deleteValue, listValue } from "../../api/dictApi";
+import { nextTick, onMounted, ref } from "vue";
+import { deleteValue, listValue } from "../api";
 import ValueAdd from "./ValueAdd.vue";
 import ValueEdit from "./ValueEdit.vue";
-import useLoading from "@/hooks/useLoading";
+import { ValueItem } from "../model";
 
 const emits = defineEmits(["refresh"]);
 const props = defineProps({
@@ -133,7 +134,7 @@ const handleValueAddOk = async () => {
 const valueEditRef = ref();
 const valueEditVisible = ref(false);
 // 点击修改
-const handleEdit = (record) => {
+const handleEdit = (record: ValueItem) => {
   valueEditVisible.value = true;
   nextTick(() => {
     valueEditRef.value.init(record.id);
@@ -149,13 +150,13 @@ const handleValueEditOk = async () => {
 };
 
 // build delete
-const handleDelete = async (record) => {
+const handleDelete = async (record: ValueItem) => {
   setLoading(true);
   try {
     const { success, message } = await deleteValue(record.id);
     if (success) {
       Message.success("删除成功");
-      search(false);
+      search();
       emits("refresh");
     } else {
       Message.error(message || "删除失败");

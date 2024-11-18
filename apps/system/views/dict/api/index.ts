@@ -1,6 +1,7 @@
-import request from "@/utils/request";
+import request from "@/utils/request.js";
+import { TypeForm, TypeItem, TypeQuery, ValueForm, ValueItem } from "../model";
 
-export function queryType(parameter, query) {
+export function queryType(parameter: PageParam, query: TypeQuery): Promise<WebResult<TypeItem[]>> {
   return request({
     url: "/system/dict/queryType",
     method: "post",
@@ -9,7 +10,7 @@ export function queryType(parameter, query) {
   });
 }
 
-export function saveType(form) {
+export function saveType(form: TypeForm): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/saveType",
     method: "post",
@@ -17,7 +18,7 @@ export function saveType(form) {
   });
 }
 
-export function getType(id) {
+export function getType(id: string): Promise<WebResult<TypeForm>> {
   return request({
     url: "/system/dict/getType",
     method: "get",
@@ -25,7 +26,7 @@ export function getType(id) {
   });
 }
 
-export function updateType(id, form) {
+export function updateType(id: string, form: TypeForm): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/updateType",
     method: "post",
@@ -34,7 +35,7 @@ export function updateType(id, form) {
   });
 }
 
-export function deleteType(id) {
+export function deleteType(id: string): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/deleteType",
     method: "post",
@@ -42,7 +43,7 @@ export function deleteType(id) {
   });
 }
 
-export function refreshCache(type) {
+export function refreshCache(type: string): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/refreshCache",
     method: "post",
@@ -50,7 +51,7 @@ export function refreshCache(type) {
   });
 }
 
-export function listValue(typeId) {
+export function listValue(typeId: string): Promise<WebResult<ValueItem[]>> {
   return request({
     url: "/system/dict/listValue",
     method: "get",
@@ -58,7 +59,7 @@ export function listValue(typeId) {
   });
 }
 
-export function saveValue(typeId, form) {
+export function saveValue(typeId: string, form: ValueForm): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/saveValue",
     method: "post",
@@ -67,7 +68,7 @@ export function saveValue(typeId, form) {
   });
 }
 
-export function getValue(id) {
+export function getValue(id: string): Promise<WebResult<ValueForm>> {
   return request({
     url: "/system/dict/getValue",
     method: "get",
@@ -75,7 +76,7 @@ export function getValue(id) {
   });
 }
 
-export function updateValue(id, form) {
+export function updateValue(id: string, form: ValueForm): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/updateValue",
     method: "post",
@@ -84,7 +85,7 @@ export function updateValue(id, form) {
   });
 }
 
-export function deleteValue(id) {
+export function deleteValue(id: string): Promise<WebResult<void>> {
   return request({
     url: "/system/dict/deleteValue",
     method: "post",
