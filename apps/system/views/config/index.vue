@@ -4,47 +4,25 @@
     <a-card style="height:calc(100vh - 170px);overflow: auto;" :bordered="false">
       <a-row>
         <a-col :flex="1">
-          <a-form :model="queryParam" :label-col-props="{ span: 10 }" :wrapper-col-props="{ span: 14 }" label-align="right">
-            <a-row>
-              <a-col :span="7">
-                <a-form-item label="配置名称">
-                  <a-input v-model="queryParam.name" placeholder="请输入配置名称" allow-clear />
-                </a-form-item>
-              </a-col>
-              <a-col :span="7">
-                <a-form-item label="配置编码">
-                  <a-input v-model="queryParam.code" placeholder="请输入配置编码" allow-clear />
-                </a-form-item>
-              </a-col>
-              <a-col :span="7">
-                <a-form-item label="启用状态">
-                  <a-select v-model="queryParam.isEnabled" placeholder="请选择" allow-clear>
-                    <a-option v-for="item in isEnabledOptions" :key="item.value" :value="item.value">{{ item.text }}</a-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row v-if="showMoreSearch">
-              <a-col :span="7">
-                <a-form-item label="配置内容">
-                  <a-input v-model="queryParam.value" placeholder="请输入配置内容" allow-clear />
-                </a-form-item>
-              </a-col>
-            </a-row>
+          <a-form :model="queryParam" layout="inline" label-align="right">
+            <a-form-item label="配置名称" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
+              <a-input v-model="queryParam.name" placeholder="配置名称" allow-clear />
+            </a-form-item>
+            <a-form-item label="配置编码" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
+              <a-input v-model="queryParam.code" placeholder="配置编码" allow-clear />
+            </a-form-item>
+            <a-form-item label="启用状态" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
+              <a-select v-model="queryParam.isEnabled" placeholder="启用状态" :options="isEnabledOptions" allow-clear />
+            </a-form-item>
+            <a-form-item label="配置内容" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
+              <a-input v-model="queryParam.value" placeholder="配置内容" allow-clear />
+            </a-form-item>
           </a-form>
         </a-col>
         <a-col flex="200px" style="text-align: right">
           <a-space :size="10">
             <a-button type="primary" @click="search(true)">查询</a-button>
             <a-button @click="reset">重置</a-button>
-            <a-link v-if="!showMoreSearch" @click="handleShowMoreSearch(true)">
-              展开
-              <icon-down />
-            </a-link>
-            <a-link v-else @click="handleShowMoreSearch(false)">
-              收起
-              <icon-up />
-            </a-link>
           </a-space>
         </a-col>
       </a-row>
@@ -73,18 +51,18 @@
           :bordered="false"
       >
         <template #columns>
-          <a-table-column title="序号" data-index="index" width="80" align="center"></a-table-column>
-          <a-table-column title="配置名称" data-index="name" width="200"></a-table-column>
-          <a-table-column title="配置编码" data-index="code" width="200"></a-table-column>
+          <a-table-column title="序号" data-index="index" :width="80" align="center"></a-table-column>
+          <a-table-column title="配置名称" data-index="name" :width="200"></a-table-column>
+          <a-table-column title="配置编码" data-index="code" :width="200"></a-table-column>
           <a-table-column title="配置内容" data-index="value"></a-table-column>
-          <a-table-column title="启用状态" width="120" align="center">
+          <a-table-column title="启用状态" :width="120" align="center">
             <template #cell="{ record }">
               <a-tag v-if="record.isEnabled==1" color="rgb(var(--success-6))">启用</a-tag>
               <a-tag v-if="record.isEnabled!=1" color="rgb(var(--warning-6))">禁用</a-tag>
             </template>
           </a-table-column>
-          <a-table-column title="排序号" data-index="sn" width="100" align="right"></a-table-column>
-          <a-table-column title="操作" align="center" width="160">
+          <a-table-column title="排序号" data-index="sn" :width="100" align="right"></a-table-column>
+          <a-table-column title="操作" align="center" :width="160">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="handleEdit(record)">修改</a-link>
@@ -144,27 +122,21 @@
     </a-card>
   </div>
 </template>
-<script>
+<script lang="ts">
 export default {
   name: "Config",
 };
 </script>
-<script setup>
+<script lang="ts" setup>
+import { ConfigItem } from "./model";
+import { isEnabledOptions } from "../options";
 import { nextTick, onMounted, reactive, ref } from "vue";
 import ConfigAdd from "./components/ConfigAdd.vue";
 import ConfigEdit from "./components/ConfigEdit.vue";
 import { Message } from "@arco-design/web-vue";
-import { deleteConfig, queryConfig, refreshConfigCache } from "../../api/configApi";
+import { deleteConfig, queryConfig, refreshConfigCache } from "./api";
 import useLoading from "@/hooks/useLoading";
 
-const isEnabledOptions = reactive([
-  { text: "启用", value: 1 },
-  { text: "禁用", value: 0 },
-]);
-const showMoreSearch = ref(false);
-const handleShowMoreSearch = (show) => {
-  showMoreSearch.value = show;
-};
 const { loading, setLoading } = useLoading();
 const queryParam = reactive({
   name: "",
@@ -179,11 +151,11 @@ const tablePagination = reactive({
   pageSize: 10,
   totalCount: 0,
 });
-const handleTablePageChange = (pageNo) => {
+const handleTablePageChange = (pageNo: number) => {
   tablePagination.pageNo = pageNo;
   loadTableData();
 };
-const handleTablePageSizeChange = (pageSize) => {
+const handleTablePageSizeChange = (pageSize: number) => {
   tablePagination.pageSize = pageSize;
   loadTableData();
 };
@@ -202,7 +174,7 @@ const search = (first = true) => {
 
 const reset = () => {
   queryParam.isEnabled = undefined;
-  queryParam.type = "";
+  queryParam.code = "";
   queryParam.name = "";
   queryParam.value = "";
   search();
@@ -240,7 +212,7 @@ const handleConfigAddOk = async () => {
 const configEditRef = ref();
 const configEditVisible = ref(false);
 // 点击修改
-const handleEdit = (record) => {
+const handleEdit = (record: ConfigItem) => {
   configEditVisible.value = true;
   nextTick(() => {
     configEditRef.value.init(record.id);
@@ -256,7 +228,7 @@ const handleConfigEditOk = async () => {
 };
 
 // build delete
-const handleDelete = async (record) => {
+const handleDelete = async (record: ConfigItem) => {
   setLoading(true);
   try {
     const { success, message } = await deleteConfig(record.id);
