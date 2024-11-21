@@ -1,7 +1,7 @@
-import request from "@/utils/request";
-import { ConfigForm } from "../model";
+import request from "@/utils/request.js";
+import { ConfigForm, ConfigItem, ConfigQuery } from "../model";
 
-export function queryConfig(parameter, query) {
+export function queryConfig(parameter: PageParam, query: ConfigQuery): Promise<WebResult<ConfigItem[]>> {
   return request({
     url: "/system/config/queryConfig",
     method: "post",
@@ -10,7 +10,7 @@ export function queryConfig(parameter, query) {
   });
 }
 
-export function saveConfig(form: ConfigForm) {
+export function saveConfig(form: ConfigForm): Promise<WebResult<void>> {
   return request({
     url: "/system/config/saveConfig",
     method: "post",
@@ -18,7 +18,7 @@ export function saveConfig(form: ConfigForm) {
   });
 }
 
-export function getConfig(id: string) {
+export function getConfig(id: string): Promise<WebResult<ConfigForm>> {
   return request({
     url: "/system/config/getConfig",
     method: "get",
@@ -26,7 +26,7 @@ export function getConfig(id: string) {
   });
 }
 
-export function updateConfig(id: string, form: ConfigForm) {
+export function updateConfig(id: string, form: ConfigForm): Promise<WebResult<void>> {
   return request({
     url: "/system/config/updateConfig",
     method: "post",
@@ -35,7 +35,7 @@ export function updateConfig(id: string, form: ConfigForm) {
   });
 }
 
-export function deleteConfig(id: string) {
+export function deleteConfig(id: string): Promise<WebResult<void>> {
   return request({
     url: "/system/config/deleteConfig",
     method: "post",
@@ -43,7 +43,7 @@ export function deleteConfig(id: string) {
   });
 }
 
-export function refreshConfigCache() {
+export function refreshConfigCache(): Promise<WebResult<void>> {
   return request({
     url: "/system/config/refreshConfigCache",
     method: "post",

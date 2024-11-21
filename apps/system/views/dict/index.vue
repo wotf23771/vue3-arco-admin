@@ -4,22 +4,47 @@
     <a-card style="height:calc(100vh - 170px);overflow: auto;" :bordered="false">
       <a-row>
         <a-col :flex="1">
-          <a-form :model="queryParam" layout="inline" label-align="right">
-            <a-form-item label="字典名称" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
-              <a-input v-model="queryParam.name" placeholder="字典名称" allow-clear />
-            </a-form-item>
-            <a-form-item label="字典类型" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
-              <a-input v-model="queryParam.type" placeholder="字典类型" allow-clear />
-            </a-form-item>
-            <a-form-item label="启用状态" hide-label :label-col-style="{width:'80px'}" :wrapper-col-style="{width:'200px'}">
-              <a-select v-model="queryParam.isEnabled" placeholder="启用状态" :options="isEnabledOptions" allow-clear />
-            </a-form-item>
+          <a-form :model="queryParam" :label-col-props="{ span: 10 }" :wrapper-col-props="{ span: 14 }" label-align="right">
+            <a-row>
+              <a-col :span="7">
+                <a-form-item label="字典名称">
+                  <a-input v-model="queryParam.name" placeholder="请输入字典名称" allow-clear />
+                </a-form-item>
+              </a-col>
+              <a-col :span="7">
+                <a-form-item label="字典类型">
+                  <a-input v-model="queryParam.type" placeholder="请输入字典类型" allow-clear />
+                </a-form-item>
+              </a-col>
+              <a-col :span="7">
+                <a-form-item label="启用状态">
+                  <a-select v-model="queryParam.isEnabled" placeholder="请选择" allow-clear>
+                    <a-option v-for="item in isEnabledOptions" :key="item.value" :value="item.value">{{ item.text }}</a-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row v-if="showMoreSearch">
+              <a-col :span="7">
+                <a-form-item label="备注">
+                  <a-input v-model="queryParam.remark" placeholder="请输入备注" allow-clear />
+                </a-form-item>
+              </a-col>
+            </a-row>
           </a-form>
         </a-col>
         <a-col flex="200px" style="text-align: right">
           <a-space :size="10">
             <a-button type="primary" @click="search(true)">查询</a-button>
             <a-button @click="reset">重置</a-button>
+            <a-link v-if="!showMoreSearch" @click="handleShowMoreSearch(true)">
+              展开
+              <icon-down />
+            </a-link>
+            <a-link v-else @click="handleShowMoreSearch(false)">
+              收起
+              <icon-up />
+            </a-link>
           </a-space>
         </a-col>
       </a-row>
@@ -45,18 +70,18 @@
           :bordered="false"
       >
         <template #columns>
-          <a-table-column title="序号" data-index="index" :width="80" align="center"></a-table-column>
-          <a-table-column title="字典名称" data-index="name" :width="200"></a-table-column>
-          <a-table-column title="字典类型" data-index="type" :width="200"></a-table-column>
-          <a-table-column title="启用状态" :width="120" align="center">
+          <a-table-column title="序号" data-index="index" width="80" align="center"></a-table-column>
+          <a-table-column title="字典名称" data-index="name" width="200"></a-table-column>
+          <a-table-column title="字典类型" data-index="type" width="200"></a-table-column>
+          <a-table-column title="启用状态" width="120" align="center">
             <template #cell="{ record }">
               <a-tag v-if="record.isEnabled==1" color="rgb(var(--success-6))">启用</a-tag>
               <a-tag v-if="record.isEnabled!=1" color="rgb(var(--warning-6))">禁用</a-tag>
             </template>
           </a-table-column>
-          <a-table-column title="排序号" data-index="sn" :width="100" align="right"></a-table-column>
+          <a-table-column title="排序号" data-index="sn" width="100" align="right"></a-table-column>
           <a-table-column title="备注" data-index="remark"></a-table-column>
-          <a-table-column title="操作" align="center" :width="280">
+          <a-table-column title="操作" align="center" width="280">
             <template #cell="{ record }">
               <a-space>
                 <a-link :hoverable="false" @click="handleListValue(record)">配置字典（{{ record.valueCount }}）</a-link>
@@ -126,22 +151,28 @@
     </a-card>
   </div>
 </template>
-<script lang="ts">
+<script>
 export default {
   name: "Dict",
 };
 </script>
-<script lang="ts" setup>
-import { TypeItem } from "./model";
-import { isEnabledOptions } from "../options";
+<script setup>
 import { nextTick, onMounted, ref, reactive } from "vue";
-import TypeAdd from "./components/TypeAdd.vue";
-import TypeEdit from "./components/TypeEdit.vue";
+import TypeAdd from "./TypeAdd.vue";
+import TypeEdit from "./TypeEdit.vue";
 import { Message } from "@arco-design/web-vue";
-import { deleteType, queryType, refreshCache } from "./api";
-import ValueList from "./components/ValueList.vue";
+import { deleteType, queryType, refreshCache } from "../../api/dictApi";
+import ValueList from "./ValueList.vue";
 import useLoading from "@/hooks/useLoading";
 
+const isEnabledOptions = reactive([
+  { text: "启用", value: 1 },
+  { text: "禁用", value: 0 },
+]);
+const showMoreSearch = ref(false);
+const handleShowMoreSearch = (show) => {
+  showMoreSearch.value = show;
+};
 const { loading, setLoading } = useLoading();
 const queryParam = reactive({
   name: "",
@@ -150,17 +181,17 @@ const queryParam = reactive({
   remark: "",
 });
 
-const tableData = ref<TypeItem[]>([]);
-const tablePagination = reactive<PageResult>({
+const tableData = ref([]);
+const tablePagination = reactive({
   pageNo: 1,
   pageSize: 10,
   totalCount: 0,
 });
-const handleTablePageChange = (pageNo: number) => {
+const handleTablePageChange = (pageNo) => {
   tablePagination.pageNo = pageNo;
   loadTableData();
 };
-const handleTablePageSizeChange = (pageSize: number) => {
+const handleTablePageSizeChange = (pageSize) => {
   tablePagination.pageSize = pageSize;
   loadTableData();
 };
@@ -185,14 +216,15 @@ const reset = () => {
   search();
 };
 const loadTableData = async () => {
+  setLoading(true);
   try {
-    setLoading(true);
     const { data, page } = await queryType(tablePagination, queryParam);
     tableData.value = data;
     tablePagination.totalCount = page.totalCount;
-  } finally {
-    setLoading(false);
+  } catch (err) {
+    console.log("err", err);
   }
+  setLoading(false);
 };
 
 // build add
@@ -214,7 +246,7 @@ const handleConfigAddOk = async () => {
 const configEditRef = ref();
 const configEditVisible = ref(false);
 // 点击修改
-const handleEdit = (record: TypeItem) => {
+const handleEdit = (record) => {
   configEditVisible.value = true;
   nextTick(() => {
     configEditRef.value.init(record.id);
@@ -230,9 +262,9 @@ const handleConfigEditOk = async () => {
 };
 
 // build delete
-const handleDelete = async (record: TypeItem) => {
+const handleDelete = async (record) => {
+  setLoading(true);
   try {
-    setLoading(true);
     const { success, message } = await deleteType(record.id);
     if (success) {
       Message.success("删除成功");
@@ -240,23 +272,23 @@ const handleDelete = async (record: TypeItem) => {
     } else {
       Message.error(message || "删除失败");
     }
-  } finally {
-    setLoading(false);
+  } catch (err) {
   }
+  setLoading(false);
 };
 
-const handleRefreshCache = async (record: TypeItem) => {
+const handleRefreshCache = async (record) => {
+  setLoading(true);
   try {
-    setLoading(true);
     const { success, message } = await refreshCache(record.type);
     if (success) {
       Message.success("刷新成功");
     } else {
       Message.error(message || "刷新失败");
     }
-  } finally {
-    setLoading(false);
+  } catch (err) {
   }
+  setLoading(false);
 };
 
 //******字典配置******
@@ -265,7 +297,7 @@ const valueListRef = ref();
 const valueListVisible = ref(false);
 const typeId = ref("");
 // 配置字典
-const handleListValue = (record: TypeItem) => {
+const handleListValue = (record) => {
   valueListTitle.value = `${record.name}-${record.type}`;
   typeId.value = record.id;
   valueListVisible.value = true;
